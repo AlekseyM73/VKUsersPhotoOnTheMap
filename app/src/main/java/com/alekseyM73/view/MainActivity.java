@@ -1,8 +1,11 @@
-package com.alekseyM73;
+package com.alekseyM73.view;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.alekseyM73.R;
 
 public class MainActivity extends AppCompatActivity {
 
