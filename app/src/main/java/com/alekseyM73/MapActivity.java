@@ -98,10 +98,10 @@ public class MapActivity extends AppCompatActivity implements
     }
 
         private void addObjectsToMap() {
-            groundOverlay = mMap.addGroundOverlay(new GroundOverlayOptions()
+       /*     groundOverlay = mMap.addGroundOverlay(new GroundOverlayOptions()
                 .image(BitmapDescriptorFactory.fromResource(R.drawable.harbour_bridge))
                 .position(ULYANOVSK, 700000)
-                .clickable(true));
+                .clickable(true));*/
     }
 
         private void showMyLocation() {
