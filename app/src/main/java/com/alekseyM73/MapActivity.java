@@ -1,9 +1,14 @@
 package com.alekseyM73;
+import android.Manifest;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -20,6 +25,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import static android.support.v4.content.PermissionChecker.PERMISSION_DENIED;
+
 
 public class MapActivity extends AppCompatActivity implements
         OnMapReadyCallback,
@@ -27,18 +34,50 @@ public class MapActivity extends AppCompatActivity implements
         OnGroundOverlayClickListener {
 
     private static final LatLng ULYANOVSK = new LatLng(54.1850, 48.2333);
+    private final int REQUEST_LOCATION = 100;
         private GoogleMap mMap = null;
-        private GroundOverlay mSydneyGroundOverlay;
+        private GroundOverlay groundOverlay;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync( this);
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_DENIED) {
+                showRequestRationaleDialog();
+            } else {
+                configureMap();
+            }
     }
+
+    private void showRequestRationaleDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.permissions_request_title)
+                .setMessage(R.string.permissions_request_message)
+                .setPositiveButton(R.string.ok, (dialogInterface, i) ->
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_LOCATION))
+                .create()
+                .show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_LOCATION) {
+            if (permissions[0].equalsIgnoreCase(Manifest.permission.ACCESS_FINE_LOCATION) && grantResults[0] == PERMISSION_DENIED) {
+                Toast.makeText(this, R.string.back_off, Toast.LENGTH_LONG).show();
+                finish();
+            } else {
+                configureMap();
+            }
+        }
+    }
+
+        private void configureMap(){
+            SupportMapFragment mapFragment =
+                    (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            mapFragment.getMapAsync( this);
+        }
 
         @Override
         public void onMapReady(GoogleMap map) {
@@ -59,7 +98,7 @@ public class MapActivity extends AppCompatActivity implements
     }
 
         private void addObjectsToMap() {
-            mSydneyGroundOverlay = mMap.addGroundOverlay(new GroundOverlayOptions()
+            groundOverlay = mMap.addGroundOverlay(new GroundOverlayOptions()
                 .image(BitmapDescriptorFactory.fromResource(R.drawable.harbour_bridge))
                 .position(ULYANOVSK, 700000)
                 .clickable(true));

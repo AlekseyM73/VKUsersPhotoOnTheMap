@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">VKUsersPhotoOnTheMap</string>
+    <string name="permissions_request_title">Внимание!</string>
+    <string name="permissions_request_message">Для корректной работы приложения необходим доступ к местоположению. Для сохранения скриншотов необходим доступ к внешнему хранилищу</string>
+    <string name="ok">Понятно</string>
+    <string name="back_off">Приложение не может работать без доступа к местоположению</string>
 </resources>
