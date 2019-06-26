@@ -2,7 +2,7 @@
     <string name="app_name">VKUsersPhotoOnTheMap</string>
     <string name="permissions_request_message">Для корректной работы приложения необходим доступ к местоположению</string>
     <string name="ok">Включить</string>
-    <integer name="com_vk_sdk_AppId">7033265</integer>
+    <integer name="com_vk_sdk_AppId">7033600</integer>
     <string name="auth">Авторизоваться</string>
     <string name="auth_message">Для работы с приложением необходимо авторизоваться через профиль ВКонтакте</string>
     <string name="title_activity_photos">Фотографии</string>
