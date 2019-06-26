@@ -1,4 +1,4 @@
-package com.alekseyM73;
+package com.alekseyM73.view;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;

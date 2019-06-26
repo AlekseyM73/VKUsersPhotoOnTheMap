@@ -1,4 +1,4 @@
-package com.alekseyM73;
+package com.alekseyM73.view;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,7 +11,7 @@ import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
 
-
+import com.alekseyM73.R;
 
 
 public class MainActivity extends Activity {

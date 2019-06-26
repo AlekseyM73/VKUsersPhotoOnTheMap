@@ -2,6 +2,7 @@ package com.alekseyM73;
 
 import android.content.Intent;
 
+import com.alekseyM73.view.MainActivity;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
@@ -19,7 +20,6 @@ public class Application extends android.app.Application{
             }
         }
     };
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -27,6 +27,5 @@ public class Application extends android.app.Application{
         Places.initialize(getApplicationContext(), "AIzaSyDBgLHJYirxcbCrWqn32GMNOcl9XYVyZQc");
         vkAccessTokenTracker.startTracking();
         VKSdk.initialize(this);
-
     }
 }
