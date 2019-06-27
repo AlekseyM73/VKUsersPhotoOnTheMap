@@ -3,7 +3,9 @@ package com.alekseyM73.model.user;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class UserResponse {
+import java.io.Serializable;
+
+public class UserResponse implements Serializable {
 
     @SerializedName("id")
     @Expose
@@ -19,7 +21,7 @@ public class UserResponse {
 
     @SerializedName("sex")
     @Expose
-    private Long sex;
+    private int sex;
 
     @SerializedName("bdate")
     @Expose
@@ -49,11 +51,11 @@ public class UserResponse {
         this.lastName = lastName;
     }
 
-    public Long getSex() {
+    public int getSex() {
         return sex;
     }
 
-    public void setSex(Long sex) {
+    public void setSex(int sex) {
         this.sex = sex;
     }
 

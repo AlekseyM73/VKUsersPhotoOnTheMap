@@ -3,7 +3,9 @@ package com.alekseyM73.model.photo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Photo {
+import java.io.Serializable;
+
+public class Photo implements Serializable {
 
     @SerializedName("type")
     @Expose

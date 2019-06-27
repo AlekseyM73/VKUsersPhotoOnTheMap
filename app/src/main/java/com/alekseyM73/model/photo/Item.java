@@ -3,9 +3,10 @@ package com.alekseyM73.model.photo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Item {
+public class Item implements Serializable {
 
     @SerializedName("id")
     @Expose
