@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
         if (new Preferences().getToken(this) != null){
             onSuccess();
         } else {
-            layout.setVisibility(View.VISIBLE);
+            layout.setVisibility(View.INVISIBLE);
             String[] scopes = new String[]{VKScope.PHOTOS};
             VKSdk.login(this, scopes);
         }

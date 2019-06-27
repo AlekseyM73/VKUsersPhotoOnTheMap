@@ -6,4 +6,6 @@
     <string name="auth">Авторизоваться</string>
     <string name="auth_message">Для работы с приложением необходимо авторизоваться через профиль ВКонтакте</string>
     <string name="title_activity_photos">Фотографии</string>
+
+    <string name="hint_search_place">Поиск мест</string>
 </resources>

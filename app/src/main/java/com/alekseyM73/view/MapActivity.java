@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -36,6 +37,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.Arrays;
 
@@ -48,17 +50,31 @@ public class MapActivity extends AppCompatActivity implements
     private static final LatLng ULYANOVSK = new LatLng(54.1850, 48.2333);
     private static final String TAG = "MapActivity";
     private final int REQUEST_LOCATION = 100;
+
     private GoogleMap mMap = null;
     private GroundOverlay groundOverlay;
     private FusedLocationProviderClient locationClient;
     private Marker currentMarker;
+
     private View vGoToLocation;
+    private BottomSheetBehavior bottomSheetBehavior;
+    private AutoCompleteTextView vSearch;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+        setSearchPlace();
+        configureMap();
+
+        setViews();
+
+        locationClient = LocationServices.getFusedLocationProviderClient(this);
+    }
+
+    private void setViews(){
         vGoToLocation = findViewById(R.id.to_location);
         vGoToLocation.setOnClickListener(v -> {
             if (currentMarker != null) {
@@ -66,31 +82,51 @@ public class MapActivity extends AppCompatActivity implements
             }
         });
 
-        setSearchPlace();
-        configureMap();
+        View bottomS = findViewById(R.id.bottom_sheet);
 
-        locationClient = LocationServices.getFusedLocationProviderClient(this);
+        vSearch = bottomS.findViewById(R.id.input_search);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomS);
+        vSearch.setOnClickListener( listener -> {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        });
+        vSearch.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
+        });
+
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View view, int i) {
+                switch (i) {
+                    case BottomSheetBehavior.STATE_SETTLING: {
+                        vGoToLocation.setVisibility(View.INVISIBLE);
+                        break;
+                    }
+                    case BottomSheetBehavior.STATE_EXPANDED: {
+                        vGoToLocation.setVisibility(View.INVISIBLE);
+                        break;
+                    }
+                    case BottomSheetBehavior.STATE_COLLAPSED: {
+                        vGoToLocation.setVisibility(View.VISIBLE);
+                        break;
+                    }
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        break;
+                    case BottomSheetBehavior.STATE_HALF_EXPANDED:
+                        break;
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View view, float v) {
+            }
+        });
     }
 
     private void setSearchPlace(){
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-        if (autocompleteFragment == null) return;
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
-
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(@androidx.annotation.NonNull Place place) {
-                // TODO: Get info about the selected place.
-                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
-            }
-
-            @Override
-            public void onError(@NonNull Status status) {
-                Log.i(TAG, "An error occurred: " + status);
-
-            }
-        });
     }
 
     private void configureMap(){
@@ -146,7 +182,6 @@ public class MapActivity extends AppCompatActivity implements
     };
 
     private boolean checkPermission(){
-        System.out.println("--------- checkPermission()");
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(
                     this,
@@ -220,4 +255,15 @@ public class MapActivity extends AppCompatActivity implements
         Toast.makeText(this,"pic",Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onBackPressed() {
+        System.out.println("------ State = " + bottomSheetBehavior.getState());
+        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
+            System.out.println("----------- Setting state");
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            System.out.println("----------- Setted state");
+            return;
+        }
+        super.onBackPressed();
+    }
 }
