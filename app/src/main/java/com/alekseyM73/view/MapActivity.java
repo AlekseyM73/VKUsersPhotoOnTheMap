@@ -8,6 +8,8 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
@@ -108,7 +110,10 @@ public class MapActivity extends AppCompatActivity implements
                         break;
                     }
                     case BottomSheetBehavior.STATE_COLLAPSED: {
+                        Animation inAnim = new AlphaAnimation(0.0f, 1.0f);
+                        inAnim.setDuration(100);
                         vGoToLocation.setVisibility(View.VISIBLE);
+                        vGoToLocation.startAnimation(inAnim);
                         break;
                     }
                     case BottomSheetBehavior.STATE_DRAGGING:

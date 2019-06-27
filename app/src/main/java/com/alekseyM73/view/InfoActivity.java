@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -70,7 +69,7 @@ public class InfoActivity extends AppCompatActivity {
     // и вставить в поле "sex".
 
     private void setInf(){
-        firsec = findViewById(R.id.First_Second);
+        firsec = findViewById(R.id.full_name);
         bDate = findViewById(R.id.bday);
         sex = findViewById(R.id.sex);
         butToLib = findViewById(R.id.butToLib);
