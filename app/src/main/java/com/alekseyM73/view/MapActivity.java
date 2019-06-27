@@ -257,11 +257,8 @@ public class MapActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        System.out.println("------ State = " + bottomSheetBehavior.getState());
         if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
-            System.out.println("----------- Setting state");
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            System.out.println("----------- Setted state");
             return;
         }
         super.onBackPressed();
