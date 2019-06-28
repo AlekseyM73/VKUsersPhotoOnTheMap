@@ -51,7 +51,6 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -182,16 +181,7 @@ public class MapActivity extends AppCompatActivity implements
 
         locationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        mClusterManager = new ClusterManager<Item>(this, mMap);
-        mClusterManager.setRenderer(new PhotoRenderer());
-        mMap.setOnCameraIdleListener(mClusterManager);
-        mMap.setOnMarkerClickListener(mClusterManager);
-        mMap.setOnInfoWindowClickListener(mClusterManager);
-        mClusterManager.setOnClusterClickListener(this);
-        mClusterManager.setOnClusterInfoWindowClickListener(this);
-        mClusterManager.setOnClusterItemClickListener(this);
-        mClusterManager.setOnClusterItemInfoWindowClickListener(this);
-        mClusterManager.cluster();
+
     }
 
     private void setViews(){
@@ -252,6 +242,17 @@ public class MapActivity extends AppCompatActivity implements
         addObjectsToMap();
         mMap.setOnGroundOverlayClickListener(this);
         findLocation();
+
+        mClusterManager = new ClusterManager<Item>(this, mMap);
+        mClusterManager.setRenderer(new PhotoRenderer());
+        mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
+        mMap.setOnInfoWindowClickListener(mClusterManager);
+        mClusterManager.setOnClusterClickListener(this);
+        mClusterManager.setOnClusterInfoWindowClickListener(this);
+        mClusterManager.setOnClusterItemClickListener(this);
+        mClusterManager.setOnClusterItemInfoWindowClickListener(this);
+        mClusterManager.cluster();
 
     }
 
