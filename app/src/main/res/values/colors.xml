@@ -6,4 +6,5 @@
     <color name="colorTextPrimary">#2C2C2C</color>
     <color name="colorTextSecondary">#7E7E7E</color>
     <color name="colorInputBack">#F0F0F0</color>
+    <color name="colorBtnBackground">#AE000000</color>
 </resources>

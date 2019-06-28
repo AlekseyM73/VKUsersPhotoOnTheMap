@@ -98,7 +98,7 @@
         app:mrb_pinMaxFont="14sp"
         app:mrb_pinColor="@color/colorAccent"
         app:mrb_temporaryPins="false"
-        app:mrb_tickDefaultColor="@color/colorAccent"
+        app:mrb_tickDefaultColor="@android:color/transparent"
         app:mrb_connectingLineColor="@color/colorAccent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/v_age"

@@ -8,7 +8,7 @@ import com.google.maps.android.clustering.ClusterItem;
 import java.io.Serializable;
 import java.util.List;
 
-public class Item implements Serializable, ClusterItem {
+public class Item implements Serializable{
 
     @SerializedName("id")
     @Expose
@@ -131,16 +131,17 @@ public class Item implements Serializable, ClusterItem {
     }
 
     @Override
-    public LatLng getPosition() {
-        return null;
-    }
-    @Override
-    public String getTitle() {
-        return "Мяу";
-    }
-
-    @Override
-    public String getSnippet() {
-        return "Уууу";
+    public String toString() {
+        return "Item{" +
+                "id=" + id +
+                ", albumId=" + albumId +
+                ", ownerId=" + ownerId +
+                ", text='" + text + '\'' +
+                ", date=" + date +
+                ", lat=" + lat +
+                ", lon=" + lon +
+                ", postId=" + postId +
+                ", userId=" + userId +
+                '}';
     }
 }

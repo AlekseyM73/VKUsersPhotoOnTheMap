@@ -10,22 +10,25 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.AutoCompleteTextView;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.alekseyM73.R;
+import com.alekseyM73.util.GlideApp;
+import com.alekseyM73.util.IconRenderer;
+import com.alekseyM73.util.MapItem;
+import com.alekseyM73.viewmodel.MapVM;
 import com.appyvet.materialrangebar.RangeBar;
 import com.alekseyM73.model.photo.Item;
-import com.alekseyM73.util.MultiDrawable;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -41,134 +44,34 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.maps.android.clustering.Cluster;
-import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
-import com.google.maps.android.clustering.view.DefaultClusterRenderer;
-import com.google.maps.android.ui.IconGenerator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 
 public class MapActivity extends AppCompatActivity implements
         OnMapReadyCallback,
-        OnGroundOverlayClickListener,
-        ClusterManager.OnClusterClickListener<Item>,
-        ClusterManager.OnClusterInfoWindowClickListener<Item>,
-        ClusterManager.OnClusterItemClickListener<Item>,
-        ClusterManager.OnClusterItemInfoWindowClickListener<Item>{
+        OnGroundOverlayClickListener{
 
-    private static final LatLng ULYANOVSK = new LatLng(54.1850, 48.2333);
-    private static final String TAG = "MapActivity";
     private final int REQUEST_LOCATION = 100;
-    private GoogleMap mMap = null;
-    private GroundOverlay groundOverlay;
-    private FusedLocationProviderClient locationClient;
+
+    private GoogleMap mMap;
     private Marker currentMarker;
     private View vGoToLocation;
+    private ClusterManager<MapItem> mClusterManager;
+
+    private FusedLocationProviderClient locationClient;
+
     private BottomSheetBehavior bottomSheetBehavior;
     private AutoCompleteTextView vSearch;
     private RangeBar rangeBarRadius;
-    private ClusterManager<Item> mClusterManager;
 
-
-    private class PhotoRenderer extends DefaultClusterRenderer<Item> {
-        private final IconGenerator mIconGenerator = new IconGenerator(getApplicationContext());
-        private final IconGenerator mClusterIconGenerator = new IconGenerator(getApplicationContext());
-        private final ImageView mImageView;
-        private final ImageView mClusterImageView;
-        private final int mDimension;
-
-        public PhotoRenderer() {
-            super(getApplicationContext(), mMap, mClusterManager);
-            View photo = getLayoutInflater().inflate(R.layout.photo_on_map, null);
-            mClusterIconGenerator.setContentView(photo);
-            mClusterImageView = (ImageView) photo.findViewById(R.id.image);
-            mImageView = new ImageView(getApplicationContext());
-            mDimension = 56;
-            mImageView.setLayoutParams(new ViewGroup.LayoutParams(mDimension, mDimension));
-            int padding = 2;
-            mImageView.setPadding(padding, padding, padding, padding);
-            mIconGenerator.setContentView(mImageView);
-        }
-
-        @Override
-        protected void onBeforeClusterItemRendered(Item item, MarkerOptions markerOptions) {
-            //Add loading photos
-            mImageView.setImageResource(R.drawable.ruth);
-            Bitmap icon = mIconGenerator.makeIcon();
-            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
-        }
-
-        @Override
-        protected void onBeforeClusterRendered(Cluster<Item> cluster,
-                                               MarkerOptions markerOptions) {
-
-            List<Drawable> photos = new ArrayList<Drawable>(Math.min(4, cluster.getSize()));
-            int width = mDimension;
-            int height = mDimension;
-
-            for (Item item : cluster.getItems()) {
-                if (photos.size() == 4) break;
-
-                //Add loading photos
-                Drawable drawable = getResources().getDrawable(R.drawable.ruth);
-                drawable.setBounds(0, 0, width, height);
-                photos.add(drawable);
-            }
-            MultiDrawable multiDrawable = new MultiDrawable(photos);
-            multiDrawable.setBounds(0, 0, width, height);
-
-            mClusterImageView.setImageDrawable(multiDrawable);
-            Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
-            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
-        }
-
-        @Override
-        protected boolean shouldRenderAsCluster(Cluster cluster) {
-            return cluster.getSize() > 1;
-        }
-    }
-
-    @Override
-    public boolean onClusterClick(Cluster<Item> cluster) {
-        LatLngBounds.Builder builder = LatLngBounds.builder();
-        for (ClusterItem item : cluster.getItems()) {
-            builder.include(item.getPosition());
-        }
-
-        final LatLngBounds bounds = builder.build();
-
-        try {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-
-    @Override
-    public void onClusterInfoWindowClick(Cluster<Item> cluster) {
-
-    }
-
-    @Override
-    public boolean onClusterItemClick(Item item) {
-        return false;
-    }
-
-    @Override
-    public void onClusterItemInfoWindowClick(Item item) {
-
-    }
+    private MapVM mapVM;
 
 
     @Override
@@ -180,8 +83,6 @@ public class MapActivity extends AppCompatActivity implements
         setViews();
 
         locationClient = LocationServices.getFusedLocationProviderClient(this);
-
-
     }
 
     private void setViews(){
@@ -210,6 +111,14 @@ public class MapActivity extends AppCompatActivity implements
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
+
+        mapVM = ViewModelProviders.of(this).get(MapVM.class);
+        mapVM.getPhotos().observe(this, items -> {
+            addItems(items);
+        });
+        mapVM.getMessage().observe(this, message ->{
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void configureMap(){
@@ -235,30 +144,66 @@ public class MapActivity extends AppCompatActivity implements
 
         mUiSettings.setMapToolbarEnabled(false);
         mUiSettings.setMyLocationButtonEnabled(true);
-        mUiSettings.setZoomControlsEnabled(true);
-        mUiSettings.setScrollGesturesEnabled(true);
+        mUiSettings.setZoomControlsEnabled(true);        mUiSettings.setScrollGesturesEnabled(true);
         mUiSettings.setZoomGesturesEnabled(true);
 
-        addObjectsToMap();
         mMap.setOnGroundOverlayClickListener(this);
         findLocation();
 
-        mClusterManager = new ClusterManager<Item>(this, mMap);
-        mClusterManager.setRenderer(new PhotoRenderer());
+        mClusterManager = new ClusterManager<MapItem>(this, mMap);
+        mClusterManager.setRenderer(new IconRenderer(getApplicationContext(), mMap, mClusterManager));
+        mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<MapItem>() {
+            @Override
+            public boolean onClusterClick(Cluster<MapItem> cluster) {
+                return false;
+            }
+        });
+
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
-        mMap.setOnInfoWindowClickListener(mClusterManager);
-        mClusterManager.setOnClusterClickListener(this);
-        mClusterManager.setOnClusterInfoWindowClickListener(this);
-        mClusterManager.setOnClusterItemClickListener(this);
-        mClusterManager.setOnClusterItemInfoWindowClickListener(this);
-        mClusterManager.cluster();
 
+    }
+
+    private void addItems(List<Item> items) {
+
+        for (Item item : items) {
+            if (item.getLat() == null || item.getLong() == null){
+                return;
+            }
+            MapItem mapItem = new MapItem(item);
+            GlideApp.with(this)
+                    .asBitmap()
+                    .load(item.getPhotos().get(0).getUrl())
+                    .into(new CustomTarget<Bitmap>(){
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            mapItem.setMarker(new MarkerOptions().icon(
+                                    BitmapDescriptorFactory.fromBitmap(resource)
+                                    )
+                            );
+                            mClusterManager.addItem(mapItem);
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                            mClusterManager.addItem(mapItem);
+                        }
+            });
+        }
+    }
+
+    private static Bitmap resizeMapIcon(Bitmap bitmap){
+        return Bitmap.createScaledBitmap(bitmap, 70, 70, false);
     }
 
     private void findLocation(){
         if (checkPermission()) {
             locationClient.requestLocationUpdates(buildLocationRequest(), locationCallback, Looper.getMainLooper());
+            locationClient.getLastLocation().addOnSuccessListener(this, location ->{
+                if (location == null){
+                    showRequestRationaleDialog();
+                }
+            });
         }
     }
 
@@ -312,13 +257,6 @@ public class MapActivity extends AppCompatActivity implements
                 .show();
     }
 
-    private void addObjectsToMap() {
-    /*     groundOverlay = mMap.addGroundOverlay(new GroundOverlayOptions()
-            .image(BitmapDescriptorFactory.fromResource(R.drawable.harbour_bridge))
-            .position(ULYANOVSK, 700000)
-            .clickable(true));*/
-    }
-
     private void showMyLocation(Location location) {
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         if (currentMarker == null) {
@@ -332,6 +270,7 @@ public class MapActivity extends AppCompatActivity implements
         } else {
             currentMarker.setPosition(latLng);
         }
+        mapVM.search(this, latLng.latitude, latLng.longitude);
     }
 
     private void moveToLocation(LatLng latLng){
