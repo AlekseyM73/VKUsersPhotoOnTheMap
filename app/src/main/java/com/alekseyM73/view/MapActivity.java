@@ -19,7 +19,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.alekseyM73.R;
-import com.google.android.gms.common.api.Status;
+import com.appyvet.materialrangebar.RangeBar;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -36,12 +36,8 @@ import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
-import java.util.Arrays;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 
@@ -61,6 +57,7 @@ public class MapActivity extends AppCompatActivity implements
     private View vGoToLocation;
     private BottomSheetBehavior bottomSheetBehavior;
     private AutoCompleteTextView vSearch;
+    private RangeBar rangeBarRadius;
 
 
     @Override
@@ -68,7 +65,6 @@ public class MapActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        setSearchPlace();
         configureMap();
 
         setViews();
@@ -78,6 +74,7 @@ public class MapActivity extends AppCompatActivity implements
 
     private void setViews(){
         vGoToLocation = findViewById(R.id.to_location);
+
         vGoToLocation.setOnClickListener(v -> {
             if (currentMarker != null) {
                 moveToLocation(currentMarker.getPosition());
@@ -85,53 +82,22 @@ public class MapActivity extends AppCompatActivity implements
         });
 
         View bottomS = findViewById(R.id.bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomS);
+
+        rangeBarRadius = findViewById(R.id.rangeBar_radius);
+        rangeBarRadius.setSeekPinByIndex(0);
 
         vSearch = bottomS.findViewById(R.id.input_search);
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomS);
+
         vSearch.setOnClickListener( listener -> {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
+
         vSearch.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
-
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View view, int i) {
-                switch (i) {
-                    case BottomSheetBehavior.STATE_SETTLING: {
-                        vGoToLocation.setVisibility(View.INVISIBLE);
-                        break;
-                    }
-                    case BottomSheetBehavior.STATE_EXPANDED: {
-                        vGoToLocation.setVisibility(View.INVISIBLE);
-                        break;
-                    }
-                    case BottomSheetBehavior.STATE_COLLAPSED: {
-                        Animation inAnim = new AlphaAnimation(0.0f, 1.0f);
-                        inAnim.setDuration(100);
-                        vGoToLocation.setVisibility(View.VISIBLE);
-                        vGoToLocation.startAnimation(inAnim);
-                        break;
-                    }
-                    case BottomSheetBehavior.STATE_DRAGGING:
-                        break;
-                    case BottomSheetBehavior.STATE_HALF_EXPANDED:
-                        break;
-                    case BottomSheetBehavior.STATE_HIDDEN:
-                        break;
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View view, float v) {
-            }
-        });
-    }
-
-    private void setSearchPlace(){
     }
 
     private void configureMap(){

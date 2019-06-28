@@ -1,13 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<ScrollView
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:cardBackgroundColor="#FFFFFF"
-    app:cardCornerRadius="0dp"
-    app:cardElevation="0dp"
-    >
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="24dp">
 
-</androidx.cardview.widget.CardView>
+    <TextView
+        android:id="@+id/v_title_params"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/search_params"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorTextPrimary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/reset"
+        android:textSize="16sp"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="@id/v_title_params"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/v_radius"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/radius"
+        android:textSize="16sp"
+        android:textColor="@color/colorTextPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/v_title_params"
+        />
+
+    <com.appyvet.materialrangebar.RangeBar
+        android:id="@+id/rangeBar_radius"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:mrb_tickTopLabels="@array/ticks_labels"
+        app:mrb_barWeight="1dp"
+        app:mrb_connectingLineWeight="2dp"
+        app:mrb_tickStart="0"
+        app:mrb_tickEnd="3"
+        app:mrb_rangeBarPaddingBottom="8dp"
+        app:mrb_selectorColor="@color/colorAccent"
+        app:mrb_pinMaxFont="14sp"
+        app:mrb_pinColor="@android:color/transparent"
+        app:mrb_pinTextColor="@android:color/transparent"
+        app:mrb_temporaryPins="true"
+        app:mrb_connectingLineColor="@color/colorAccent"
+        app:mrb_rangeBar="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/v_radius"
+        />
+
+    <TextView
+        android:id="@+id/v_age"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/age"
+        android:textSize="16sp"
+        android:textColor="@color/colorTextPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rangeBar_radius"
+
+        />
+
+    <com.appyvet.materialrangebar.RangeBar
+        android:id="@+id/rangeBar_age"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:mrb_barWeight="1dp"
+        app:mrb_connectingLineWeight="2dp"
+        app:mrb_tickStart="14"
+        app:mrb_tickEnd="80"
+        app:mrb_rangeBarPaddingBottom="8dp"
+        app:mrb_selectorColor="@color/colorAccent"
+        app:mrb_pinMaxFont="14sp"
+        app:mrb_pinColor="@color/colorAccent"
+        app:mrb_temporaryPins="false"
+        app:mrb_tickDefaultColor="@color/colorAccent"
+        app:mrb_connectingLineColor="@color/colorAccent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/v_age"
+        />
+
+    <TextView
+        android:id="@+id/v_sex"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/sex"
+        android:textSize="16sp"
+        android:textColor="@color/colorTextPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rangeBar_age"
+        />
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/v_sex"
+        android:checkedButton="@id/sex_any"
+        >
+
+        <RadioButton
+            android:id="@+id/sex_any"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/sex_any"
+            />
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/sex_male"
+            />
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/sex_female"
+            />
+    </RadioGroup>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

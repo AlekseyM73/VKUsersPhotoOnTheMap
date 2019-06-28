@@ -8,4 +8,32 @@
     <string name="title_activity_photos">Фотографии</string>
 
     <string name="hint_search_place">Поиск мест</string>
+    <string name="search_params">Параметры поиска</string>
+    <string name="age">Возраст</string>
+    <string name="radius">Радиус</string>
+    <string name="reset">Сбросить</string>
+    <string name="sex">Пол</string>
+    <string name="sex_any">Любой</string>
+    <string name="sex_male">Мужской</string>
+    <string name="sex_female">Женский</string>
+
+    <string-array name="radius_list">
+        <item>10</item>
+        <item>100</item>
+        <item>800</item>
+        <item>1000</item>
+    </string-array>
+
+    <string-array name="sex_list">
+        <item>Любой</item>
+        <item>Мужской</item>
+        <item>Женский</item>
+    </string-array>
+
+    <string-array name="ticks_labels">
+        <item>10м</item>
+        <item>100м</item>
+        <item>500м</item>
+        <item>800м</item>
+    </string-array>
 </resources>
