@@ -32,10 +32,11 @@ public class InfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
+
         Bundle arguments = getIntent().getExtras();
-
-
-        getEssences(arguments);
+        if (arguments != null) {
+            getEssences(arguments);
+        }
         setInf();
 
         butToLib.setOnClickListener(new View.OnClickListener() {
@@ -59,8 +60,7 @@ public class InfoActivity extends AppCompatActivity {
     }
 
     private void getEssences(Bundle arguments){
-       userResponse = (UserResponse)arguments
-                .getSerializable(UserResponse.class.getSimpleName());
+       userResponse = (UserResponse)arguments.getSerializable(UserResponse.class.getSimpleName());
        photo = (Photo)arguments.getSerializable(Photo.class.getSimpleName());
        item = (Item)arguments.getSerializable(Item.class.getSimpleName());
     }
@@ -74,7 +74,7 @@ public class InfoActivity extends AppCompatActivity {
         sex = findViewById(R.id.sex);
         butToLib = findViewById(R.id.butToLib);
         butToPage = findViewById(R.id.butToPage);
-        imageView = findViewById(R.id.imageView4);
+        imageView = findViewById(R.id.iv_photo);
 
 
         firsec.setText(userResponse.getFirstName() + " " + userResponse.getLastName());

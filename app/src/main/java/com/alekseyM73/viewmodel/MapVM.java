@@ -18,7 +18,6 @@ import com.alekseyM73.util.Preferences;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 public class MapVM extends AndroidViewModel {
@@ -31,7 +30,6 @@ public class MapVM extends AndroidViewModel {
 
     public MapVM(@NonNull Application application) {
         super(application);
-//        search(application.getBaseContext());
     }
 
     public LiveData<LinkedList<Item>> getPhotos(){
@@ -57,10 +55,10 @@ public class MapVM extends AndroidViewModel {
         Map<String, String> options = new HashMap<>();
         options.put("lat", String.valueOf(lat));
         options.put("long", String.valueOf(lon));
-//        options.put("start_time", "1561334400");
+        options.put("start_time", "1561334400");
 //        options.put("end_time", String.valueOf(date.getTime() / 1000));
         options.put("radius", "500");
-        options.put("count", "400");
+        options.put("count", "200");
         options.put("sort", "0");
         options.put("v", "5.95");
         options.put("access_token", accessToken);
@@ -68,11 +66,12 @@ public class MapVM extends AndroidViewModel {
         apiRepository.searchPhotos(options)
                 .subscribe(photosResponse -> {
                     if (photosResponse.getResponse() != null){
+                        if (photosResponse.getResponse().getCount() == 0){
+                            message.setValue("Упс! Здесь ничего нет");
+                        }
                         photos.setValue(new LinkedList<>(photosResponse.getResponse().getItems()));
-                        message.setValue(
-                                photosResponse.getResponse().getCount() + "/" + photosResponse.getResponse().getItems().size());
                     } else {
-                        message.setValue("Не удалось загрузить данные");
+                        message.setValue("Ничего не найдено");
                     }
                     progress.setValue(View.INVISIBLE);
                 }, error -> {

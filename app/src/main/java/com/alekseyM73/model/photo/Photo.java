@@ -7,7 +7,7 @@ import com.google.maps.android.clustering.ClusterItem;
 
 import java.io.Serializable;
 
-public class Photo implements Serializable {
+public class Photo {
 
     @SerializedName("type")
     @Expose

@@ -1,5 +1,7 @@
 package com.alekseyM73.model.photo;
 
+import android.graphics.Bitmap;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -8,7 +10,7 @@ import com.google.maps.android.clustering.ClusterItem;
 import java.io.Serializable;
 import java.util.List;
 
-public class Item implements Serializable{
+public class Item implements ClusterItem{
 
     @SerializedName("id")
     @Expose
@@ -49,6 +51,8 @@ public class Item implements Serializable{
     @SerializedName("user_id")
     @Expose
     private Long userId;
+
+    private transient Bitmap bitmap;
 
     public Long getId() {
         return id;
@@ -143,5 +147,28 @@ public class Item implements Serializable{
                 ", postId=" + postId +
                 ", userId=" + userId +
                 '}';
+    }
+
+    @Override
+    public LatLng getPosition() {
+        return new LatLng(lat, lon);
+    }
+
+    @Override
+    public String getTitle() {
+        return null;
+    }
+
+    @Override
+    public String getSnippet() {
+        return text;
+    }
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
     }
 }

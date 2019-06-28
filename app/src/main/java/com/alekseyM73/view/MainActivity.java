@@ -49,6 +49,7 @@ public class MainActivity extends Activity {
     private void onSuccess(){
         startActivity(new Intent(MainActivity.this, MapActivity.class)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        finish();
     }
 
     @Override

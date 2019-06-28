@@ -1,36 +1,102 @@
-//package com.alekseyM73.view;
-//
-//import android.arch.lifecycle.ViewModelProviders;
-//import android.support.annotation.NonNull;
-//import android.support.constraint.ConstraintLayout;
-//import android.support.design.widget.CoordinatorLayout;
-//import android.support.v7.app.AppCompatActivity;
-//import android.os.Bundle;
-//import android.support.v7.widget.GridLayoutManager;
-//import android.support.v7.widget.LinearLayoutManager;
-//import android.support.v7.widget.RecyclerView;
-//import android.view.View;
-//import android.view.animation.LinearInterpolator;
-//import android.widget.Button;
-//import android.widget.ProgressBar;
-//import android.widget.Toast;
-//
-//import androidx.appcompat.app.AppCompatActivity;
-//
-//import com.alekseyM73.adapter.PhotosAdapter;
-//import com.alekseyM73.R;
-//import com.alekseyM73.listener.ScrollingListener;
-//import com.alekseyM73.viewmodel.SearchVM;
-//
-//import java.util.LinkedList;
-//
-//public class PhotosActivity extends AppCompatActivity {
-//
-//    private SearchVM searchVM;
-//    private ProgressBar progressBar;
-//    Button button;
-//    private PhotosAdapter adapter;
-//
+package com.alekseyM73.view;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.alekseyM73.R;
+import com.alekseyM73.adapter.PhotosAdapter;
+import com.alekseyM73.model.photo.Item;
+import com.alekseyM73.viewmodel.PhotosVM;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.LinkedList;
+
+public class PhotosActivity extends AppCompatActivity {
+
+    private PhotosVM photosVM;
+    private Button button;
+    private PhotosAdapter adapter;
+    private RecyclerView recyclerView;
+
+    public static final String KEY_DATA = "com.alekseyM73.view.photos_activity.items";
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_photos);
+
+        recyclerView = findViewById(R.id.rv_photos);
+        adapter = new PhotosAdapter(new LinkedList<>());
+        recyclerView.setAdapter(adapter);
+
+        button = findViewById(R.id.btn_more);
+
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+
+        photosVM = ViewModelProviders.of(this).get(PhotosVM.class);
+
+        photosVM = ViewModelProviders.of(this).get(PhotosVM.class);
+        photosVM.getPhotos().observe(this, items -> {
+            adapter.addItems(items);
+        });
+
+        photosVM.getShowBtnMore().observe(this, visibility -> {
+            button.setVisibility(visibility == null ? View.GONE : visibility);
+        });
+
+        photosVM.getMessage().observe(this, message -> {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        });
+
+        setListeners();
+
+        if (getIntent().getExtras() != null){
+            String json = getIntent().getStringExtra(KEY_DATA);
+            Gson gson = new Gson();
+            Type listType = new TypeToken<LinkedList<Item>>(){}.getType();
+            LinkedList<Item> mapItems = gson.fromJson(json, listType);
+            photosVM.setPhotos(mapItems);
+        }
+    }
+
+    private void setListeners() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (button.getVisibility() == View.VISIBLE) {
+                    if (dy > 0) {
+                        button.animate().translationY(0).start();
+                    } else {
+                        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) button.getLayoutParams();
+                        int fab_bottomMargin = layoutParams.bottomMargin;
+                        button.animate().translationY(button.getHeight() + fab_bottomMargin).start();
+
+                    }
+                }
+            }
+        });
+
+        button.setOnClickListener(listener -> {
+            photosVM.loadMore();
+        });
+    }
+
+
 //    @Override
 //    protected void onCreate(Bundle savedInstanceState) {
 //        super.onCreate(savedInstanceState);
@@ -86,4 +152,4 @@
 //            searchVM.loadMore();
 //        });
 //    }
-//}
+}

@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/imageView4"
+            android:id="@+id/iv_photo"
             android:layout_width="match_parent"
             android:layout_height="490dp"
             tools:srcCompat="@tools:sample/avatars"

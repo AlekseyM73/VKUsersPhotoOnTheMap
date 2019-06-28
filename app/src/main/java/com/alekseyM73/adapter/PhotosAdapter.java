@@ -41,6 +41,8 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         Item item = items.get(position);
         Picasso.get()
                 .load(item.getPhotos().get(item.getPhotos().size() - 2).getUrl())
+                .fit()
+                .centerCrop()
                 .into(((Holder)holder).photo);
     }
 

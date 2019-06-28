@@ -11,6 +11,8 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,7 +25,6 @@ import androidx.lifecycle.ViewModelProviders;
 import com.alekseyM73.R;
 import com.alekseyM73.util.GlideApp;
 import com.alekseyM73.util.IconRenderer;
-import com.alekseyM73.util.MapItem;
 import com.alekseyM73.viewmodel.MapVM;
 import com.appyvet.materialrangebar.RangeBar;
 import com.alekseyM73.model.photo.Item;
@@ -36,42 +37,38 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnGroundOverlayClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.maps.android.clustering.Cluster;
+import com.google.gson.Gson;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.List;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 
-public class MapActivity extends AppCompatActivity implements
-        OnMapReadyCallback,
-        OnGroundOverlayClickListener{
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     private final int REQUEST_LOCATION = 100;
 
     private GoogleMap mMap;
     private Marker currentMarker;
     private View vGoToLocation;
-    private ClusterManager<MapItem> mClusterManager;
+    private ClusterManager<Item> mClusterManager;
 
     private FusedLocationProviderClient locationClient;
 
     private BottomSheetBehavior bottomSheetBehavior;
     private AutoCompleteTextView vSearch;
-    private RangeBar rangeBarRadius;
+    private RangeBar rangeBarRadius, rangeBarAge;
 
     private MapVM mapVM;
+    private TextView reset;
 
 
     @Override
@@ -97,7 +94,9 @@ public class MapActivity extends AppCompatActivity implements
         View bottomS = findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomS);
 
+        RadioGroup radioGroup = findViewById(R.id.sex_group);
         rangeBarRadius = findViewById(R.id.rangeBar_radius);
+        rangeBarAge = findViewById(R.id.rangeBar_age);
         rangeBarRadius.setSeekPinByIndex(0);
 
         vSearch = bottomS.findViewById(R.id.input_search);
@@ -112,10 +111,17 @@ public class MapActivity extends AppCompatActivity implements
             }
         });
 
-        mapVM = ViewModelProviders.of(this).get(MapVM.class);
-        mapVM.getPhotos().observe(this, items -> {
-            addItems(items);
+        reset = findViewById(R.id.reset);
+        reset.setOnClickListener(listener ->{
+            rangeBarRadius.setSeekPinByIndex(0);
+            rangeBarAge.setRangePinsByValue(rangeBarAge.getTickStart(), rangeBarAge.getTickEnd());
+            radioGroup.check(R.id.sex_any);
         });
+
+        mapVM = ViewModelProviders.of(this).get(MapVM.class);
+
+        mapVM.getPhotos().observe(this, this::addItems);
+
         mapVM.getMessage().observe(this, message ->{
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         });
@@ -144,19 +150,20 @@ public class MapActivity extends AppCompatActivity implements
 
         mUiSettings.setMapToolbarEnabled(false);
         mUiSettings.setMyLocationButtonEnabled(true);
-        mUiSettings.setZoomControlsEnabled(true);        mUiSettings.setScrollGesturesEnabled(true);
+        mUiSettings.setZoomControlsEnabled(true);
+        mUiSettings.setScrollGesturesEnabled(true);
         mUiSettings.setZoomGesturesEnabled(true);
 
-        mMap.setOnGroundOverlayClickListener(this);
         findLocation();
 
-        mClusterManager = new ClusterManager<MapItem>(this, mMap);
-        mClusterManager.setRenderer(new IconRenderer(getApplicationContext(), mMap, mClusterManager));
-        mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<MapItem>() {
-            @Override
-            public boolean onClusterClick(Cluster<MapItem> cluster) {
-                return false;
-            }
+        mClusterManager = new ClusterManager<Item>(this, mMap);
+        mClusterManager.setRenderer(new IconRenderer(this, mMap, mClusterManager));
+        mClusterManager.setOnClusterClickListener(cluster -> {
+            Gson gson = new Gson();
+            String json = gson.toJson(cluster.getItems());
+            startActivity(new Intent(MapActivity.this, PhotosActivity.class)
+                    .putExtra(PhotosActivity.KEY_DATA, json));
+            return false;
         });
 
         mMap.setOnCameraIdleListener(mClusterManager);
@@ -170,30 +177,22 @@ public class MapActivity extends AppCompatActivity implements
             if (item.getLat() == null || item.getLong() == null){
                 return;
             }
-            MapItem mapItem = new MapItem(item);
             GlideApp.with(this)
                     .asBitmap()
                     .load(item.getPhotos().get(0).getUrl())
                     .into(new CustomTarget<Bitmap>(){
                         @Override
                         public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                            mapItem.setMarker(new MarkerOptions().icon(
-                                    BitmapDescriptorFactory.fromBitmap(resource)
-                                    )
-                            );
-                            mClusterManager.addItem(mapItem);
+                            item.setBitmap(resource);
+                            mClusterManager.addItem(item);
                         }
 
                         @Override
                         public void onLoadCleared(@Nullable Drawable placeholder) {
-                            mClusterManager.addItem(mapItem);
+//                            mClusterManager.addItem(mapItem);
                         }
             });
         }
-    }
-
-    private static Bitmap resizeMapIcon(Bitmap bitmap){
-        return Bitmap.createScaledBitmap(bitmap, 70, 70, false);
     }
 
     private void findLocation(){
@@ -280,11 +279,6 @@ public class MapActivity extends AppCompatActivity implements
                 .zoom(15)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-    }
-
-    @Override
-    public void onGroundOverlayClick(GroundOverlay groundOverlay) {
-        Toast.makeText(this,"pic",Toast.LENGTH_SHORT).show();
     }
 
     @Override
