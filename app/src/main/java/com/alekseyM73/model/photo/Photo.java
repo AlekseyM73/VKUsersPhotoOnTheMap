@@ -1,7 +1,9 @@
 package com.alekseyM73.model.photo;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.google.maps.android.clustering.ClusterItem;
 
 import java.io.Serializable;
 
@@ -54,4 +56,8 @@ public class Photo implements Serializable {
     public void setHeight(Long height) {
         this.height = height;
     }
+
+
+
+
 }
