@@ -1,12 +1,14 @@
 package com.alekseyM73.model.photo;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.google.maps.android.clustering.ClusterItem;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class Item implements Serializable {
+public class Item implements Serializable, ClusterItem {
 
     @SerializedName("id")
     @Expose
@@ -126,5 +128,19 @@ public class Item implements Serializable {
 
     public void setPhotos(List<Photo> photos) {
         this.photos = photos;
+    }
+
+    @Override
+    public LatLng getPosition() {
+        return null;
+    }
+    @Override
+    public String getTitle() {
+        return "Мяу";
+    }
+
+    @Override
+    public String getSnippet() {
+        return "Уууу";
     }
 }
