@@ -65,10 +65,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private BottomSheetBehavior bottomSheetBehavior;
     private AutoCompleteTextView vSearch;
-    private RangeBar rangeBarRadius, rangeBarAge;
+    private RangeBar radiusRangeBar, ageRangeBar;
 
     private MapVM mapVM;
     private TextView reset;
+    private RadioGroup sexRadioGroup;
 
 
     @Override
@@ -94,10 +95,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         View bottomS = findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomS);
 
-        RadioGroup radioGroup = findViewById(R.id.sex_group);
-        rangeBarRadius = findViewById(R.id.rangeBar_radius);
-        rangeBarAge = findViewById(R.id.rangeBar_age);
-        rangeBarRadius.setSeekPinByIndex(0);
+        sexRadioGroup = findViewById(R.id.sex_group);
+        radiusRangeBar = findViewById(R.id.rangeBar_radius);
+        ageRangeBar = findViewById(R.id.rangeBar_age);
+        radiusRangeBar.setSeekPinByIndex(0);
 
         vSearch = bottomS.findViewById(R.id.input_search);
 
@@ -113,9 +114,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         reset = findViewById(R.id.reset);
         reset.setOnClickListener(listener ->{
-            rangeBarRadius.setSeekPinByIndex(0);
-            rangeBarAge.setRangePinsByValue(rangeBarAge.getTickStart(), rangeBarAge.getTickEnd());
-            radioGroup.check(R.id.sex_any);
+            radiusRangeBar.setSeekPinByIndex(0);
+            ageRangeBar.setRangePinsByValue(ageRangeBar.getTickStart(), ageRangeBar.getTickEnd());
+            sexRadioGroup.check(R.id.sex_any);
         });
 
         mapVM = ViewModelProviders.of(this).get(MapVM.class);
