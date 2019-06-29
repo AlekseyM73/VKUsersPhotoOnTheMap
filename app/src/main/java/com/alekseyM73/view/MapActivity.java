@@ -9,8 +9,13 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,9 +25,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.alekseyM73.R;
+import com.alekseyM73.adapter.PlaceAutoCompleteAdapter;
+import com.alekseyM73.model.search.Prediction;
 import com.alekseyM73.util.GlideApp;
 import com.alekseyM73.util.IconRenderer;
 import com.alekseyM73.util.SearchFilter;
@@ -49,11 +57,12 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.Gson;
 import com.google.maps.android.clustering.ClusterManager;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback{
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerDragListener{
 
     private final int REQUEST_LOCATION = 100;
 
@@ -71,6 +80,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private MapVM mapVM;
     private TextView reset;
     private RadioGroup sexRadioGroup;
+    private ProgressBar progressBar;
 
 
     @Override
@@ -102,6 +112,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         radiusRangeBar.setSeekPinByIndex(0);
 
         vSearch = bottomS.findViewById(R.id.input_search);
+        progressBar = bottomS.findViewById(R.id.progress_bar);
 
         vSearch.setOnClickListener( listener -> {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -113,6 +124,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
+        Button btnApply = bottomS.findViewById(R.id.btn_apply);
+        btnApply.setOnClickListener(v -> {
+            mapVM.searchPhotos(this, getFilterValue());
+        });
+
         reset = findViewById(R.id.reset);
         reset.setOnClickListener(listener ->{
             radiusRangeBar.setSeekPinByIndex(0);
@@ -122,24 +138,49 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         mapVM = ViewModelProviders.of(this).get(MapVM.class);
 
-        mapVM.getPhotos().observe(this, this::addItems);
+        mapVM.getPhotos().observe(this, items -> {
+            addItems(items);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        });
 
         mapVM.getMessage().observe(this, message ->{
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         });
+        mapVM.getProgress().observe(this, visibility -> {
+            progressBar.setVisibility(visibility);
+        });
+        mapVM.getPredictions().observe(this, predictions -> {
+            vSearch.setAdapter(new PlaceAutoCompleteAdapter(this, android.R.layout.simple_dropdown_item_1line, predictions));
+            vSearch.showDropDown();
+        });
+        mapVM.getLocation().observe(this, placeLocation -> {
+            showMyLocation(placeLocation.getLat(), placeLocation.getLng());
+        });
+
+        vSearch.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH) {
+                if (v.getText().toString().trim().isEmpty()) {
+                    return false;
+                }
+                mapVM.searchPlace(v.getText().toString());
+                return true;
+            } else {
+                return false;
+            }
+        });
+        vSearch.setOnItemClickListener((parent, view, position, id) -> {
+            Prediction prediction = (Prediction) parent.getItemAtPosition(position);
+            mapVM.getPlaceDetails(prediction);
+            vSearch.setText(prediction.getDescription());
+        });
     }
 
-    private SearchFilter getFilterValue(Location location){
+    private SearchFilter getFilterValue(){
         SearchFilter searchFilter = new SearchFilter();
         searchFilter.setAgeStart(ageRangeBar.getLeftPinValue());
         searchFilter.setAgeFinish(ageRangeBar.getRightPinValue());
-        searchFilter.setLatitude(location.getLatitude());
-        searchFilter.setLongitude(location.getLongitude());
-        searchFilter.setRadius(radiusRangeBar.getRightPinValue());
-
-        Log.d("mylog", ageRangeBar.getLeftPinValue() + " ageRANGE LEFT");
-        Log.d("mylog", ageRangeBar.getRightPinValue()+ " ageRANGE RIGHT");
-        Log.d("mylog", radiusRangeBar.getRightPinValue() + " RADIUS");
+        String[] radiusArray = getResources().getStringArray(R.array.radius_list);
+        searchFilter.setRadius(radiusArray[radiusRangeBar.getRightIndex()]);
         return searchFilter;
     }
 
@@ -188,6 +229,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void addItems(List<Item> items) {
+        mClusterManager.clearItems();
 
         for (Item item : items) {
             if (item.getLat() == null || item.getLong() == null){
@@ -227,7 +269,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         public void onLocationResult(LocationResult locationResult) {
             System.out.println("----------- Updates");
             if (locationResult.getLastLocation() != null) {
-                showMyLocation(locationResult.getLastLocation());
+                showMyLocation(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude());
             } else {
                 showRequestRationaleDialog();
             }
@@ -272,20 +314,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .show();
     }
 
-    private void showMyLocation(Location location) {
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+    private void showMyLocation(double lat, double lon) {
+        LatLng latLng = new LatLng(lat, lon);
+        mapVM.setLocation(lat, lon);
         if (currentMarker == null) {
-            moveToLocation(latLng);
             // Add Marker to Map
             MarkerOptions option = new MarkerOptions();
             // option.title("My Location");
             option.snippet("....");
             option.position(latLng);
             currentMarker = mMap.addMarker(option);
+            currentMarker.setDraggable(true);
         } else {
             currentMarker.setPosition(latLng);
         }
-        mapVM.search(this, getFilterValue(location));
+        moveToLocation(latLng);
+        mapVM.searchPhotos(this, getFilterValue());
     }
 
     private void moveToLocation(LatLng latLng){
@@ -307,4 +351,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
 
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        Toast.makeText(this, marker.getPosition().toString(), Toast.LENGTH_SHORT).show();;
+    }
 }

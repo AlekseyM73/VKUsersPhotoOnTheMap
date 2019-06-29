@@ -14,7 +14,7 @@
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
     android:paddingTop="16dp"
-    android:paddingBottom="24dp">
+    android:paddingBottom="16dp">
 
     <TextView
         android:id="@+id/v_title_params"
@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/reset"
-        android:textSize="16sp"
+        android:textSize="15sp"
         android:textColor="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="@id/v_title_params"
         app:layout_constraintEnd_toEndOf="parent"
@@ -55,11 +55,11 @@
         android:id="@+id/rangeBar_radius"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:mrb_tickTopLabels="@array/ticks_labels"
+        app:mrb_tickTopLabels="@array/radius_list"
         app:mrb_barWeight="1dp"
         app:mrb_connectingLineWeight="2dp"
         app:mrb_tickStart="0"
-        app:mrb_tickEnd="3"
+        app:mrb_tickEnd="5"
         app:mrb_rangeBarPaddingBottom="8dp"
         app:mrb_selectorColor="@color/colorAccent"
         app:mrb_pinMaxFont="14sp"
@@ -147,6 +147,21 @@
             android:text="@string/sex_female"
             />
     </RadioGroup>
+
+    <Button
+        android:id="@+id/btn_apply"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="0dp"
+        android:layout_marginTop="28dp"
+        android:background="@drawable/btn_apply"
+        android:text="@string/apply"
+        android:textSize="14sp"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@id/sex_group"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

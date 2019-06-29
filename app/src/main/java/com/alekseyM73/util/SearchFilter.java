@@ -1,9 +1,9 @@
 package com.alekseyM73.util;
 
 public class SearchFilter {
+
     private int sex;
     private double latitude;
-
     private double longitude;
     private String radius;
     private String ageStart;

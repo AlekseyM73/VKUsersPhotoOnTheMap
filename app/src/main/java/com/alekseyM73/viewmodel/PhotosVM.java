@@ -14,11 +14,9 @@ import java.util.LinkedList;
 
 public class PhotosVM extends AndroidViewModel {
 
-    private String accessToken = null;
     private LinkedList<Item> photos;
     private MutableLiveData<String> message = new MutableLiveData<>();
     private MutableLiveData<LinkedList<Item>> photosForShow = new MutableLiveData<>();
-    private MutableLiveData<Integer> showBtnMore = new MutableLiveData<>();
     private int photoCount = 10;
 
     public PhotosVM(@NonNull Application application) {
@@ -33,18 +31,9 @@ public class PhotosVM extends AndroidViewModel {
         return message;
     }
 
-    public LiveData<Integer> getShowBtnMore() {
-        return showBtnMore;
-    }
-
     public void setPhotos(LinkedList<Item> photos) {
         this.photos = photos;
-        if (photos.size() <= photoCount) {
-            photosForShow.setValue(photos);
-            showBtnMore.setValue(View.GONE);
-        } else {
-            photosForShow.setValue(new LinkedList<>(photos.subList(0, photoCount)));
-        }
+        photosForShow.setValue(photos);
     }
 
     public void loadMore(){
@@ -52,7 +41,6 @@ public class PhotosVM extends AndroidViewModel {
         int next = photoCount + 10;
         int photosSize = photos.size();
         if (photosSize < next){
-            showBtnMore.setValue(View.GONE);
             LinkedList<Item> newList = photosForShow.getValue();
             newList.addAll(photos.subList(photoCount, photosSize));
             photosForShow.setValue(newList);
@@ -62,8 +50,5 @@ public class PhotosVM extends AndroidViewModel {
             photosForShow.setValue(newList);
         }
         photoCount = next;
-        if (photoCount == photos.size()){
-            showBtnMore.setValue(View.GONE);
-        }
     }
 }

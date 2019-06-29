@@ -11,6 +11,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiService {
 
     private final static String BASE_URL = "https://api.vk.com/method/";
+    public final static String URL_SEARCH = "https://maps.googleapis.com/maps/api/place/queryautocomplete/json?key=AIzaSyDBgLHJYirxcbCrWqn32GMNOcl9XYVyZQc&input=";
+    public final static String URL_PLACE_DETAILS = "https://maps.googleapis.com/maps/api/place/details/json?fields=geometry&key=AIzaSyDBgLHJYirxcbCrWqn32GMNOcl9XYVyZQc&placeid=";
     private static Retrofit retrofit;
 
     public static Retrofit getRetrofit() {

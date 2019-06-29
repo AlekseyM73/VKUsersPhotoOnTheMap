@@ -26,7 +26,6 @@ import java.util.LinkedList;
 public class PhotosActivity extends AppCompatActivity {
 
     private PhotosVM photosVM;
-    private Button button;
     private PhotosAdapter adapter;
     private RecyclerView recyclerView;
 
@@ -41,8 +40,6 @@ public class PhotosActivity extends AppCompatActivity {
         adapter = new PhotosAdapter(new LinkedList<>());
         recyclerView.setAdapter(adapter);
 
-        button = findViewById(R.id.btn_more);
-
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         photosVM = ViewModelProviders.of(this).get(PhotosVM.class);
@@ -50,10 +47,6 @@ public class PhotosActivity extends AppCompatActivity {
         photosVM = ViewModelProviders.of(this).get(PhotosVM.class);
         photosVM.getPhotos().observe(this, items -> {
             adapter.addItems(items);
-        });
-
-        photosVM.getShowBtnMore().observe(this, visibility -> {
-            button.setVisibility(visibility == null ? View.GONE : visibility);
         });
 
         photosVM.getMessage().observe(this, message -> {
@@ -72,63 +65,6 @@ public class PhotosActivity extends AppCompatActivity {
     }
 
     private void setListeners() {
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-            }
-
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if (button.getVisibility() == View.VISIBLE) {
-                    if (dy > 0) {
-                        button.animate().translationY(0).start();
-                    } else {
-                        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) button.getLayoutParams();
-                        int fab_bottomMargin = layoutParams.bottomMargin;
-                        button.animate().translationY(button.getHeight() + fab_bottomMargin).start();
-
-                    }
-                }
-            }
-        });
-
-        button.setOnClickListener(listener -> {
-            photosVM.loadMore();
-        });
-    }
-
-
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_photos);
-//
-//        RecyclerView recyclerView = findViewById(R.id.rv_photos);
-//        progressBar = findViewById(R.id.progress);
-//        adapter = new PhotosAdapter(new LinkedList<>());
-//        recyclerView.setAdapter(adapter);
-//
-//        button = findViewById(R.id.btn_more);
-//
-//        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-//
-//        searchVM = ViewModelProviders.of(this).get(SearchVM.class);
-//        searchVM.getPhotos().observe(this, items -> {
-//            adapter.addItems(items);
-//        });
-//
-//        searchVM.getProgress().observe(this, progress -> {
-//            progressBar.setVisibility(progress == null ? View.INVISIBLE : progress);
-//        });
-//
-//        searchVM.getShowBtnMore().observe(this, visibility -> {
-//            button.setVisibility(visibility == null ? View.GONE : visibility);
-//        });
-//
-//        searchVM.getMessage().observe(this, message -> {
-//            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-//        });
-//
 //        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 //            @Override
 //            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -150,7 +86,8 @@ public class PhotosActivity extends AppCompatActivity {
 //        });
 //
 //        button.setOnClickListener(listener -> {
-//            searchVM.loadMore();
+//            photosVM.loadMore();
 //        });
-//    }
+    }
+
 }

@@ -77,4 +77,9 @@ public class IconRenderer extends DefaultClusterRenderer<Item> {
 
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
     }
+
+    @Override
+    protected boolean shouldRenderAsCluster(Cluster<Item> cluster) {
+        return super.shouldRenderAsCluster(cluster);
+    }
 }
