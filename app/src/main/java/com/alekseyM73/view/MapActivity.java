@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.alekseyM73.R;
 import com.alekseyM73.util.GlideApp;
 import com.alekseyM73.util.IconRenderer;
+import com.alekseyM73.util.SearchFilter;
 import com.alekseyM73.viewmodel.MapVM;
 import com.appyvet.materialrangebar.RangeBar;
 import com.alekseyM73.model.photo.Item;
@@ -126,6 +127,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapVM.getMessage().observe(this, message ->{
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private SearchFilter getFilterValue(Location location){
+        SearchFilter searchFilter = new SearchFilter();
+        searchFilter.setAgeStart(ageRangeBar.getLeftPinValue());
+        searchFilter.setAgeFinish(ageRangeBar.getRightPinValue());
+        searchFilter.setLatitude(location.getLatitude());
+        searchFilter.setLongitude(location.getLongitude());
+        searchFilter.setRadius(radiusRangeBar.getRightPinValue());
+
+        Log.d("mylog", ageRangeBar.getLeftPinValue() + " ageRANGE LEFT");
+        Log.d("mylog", ageRangeBar.getRightPinValue()+ " ageRANGE RIGHT");
+        Log.d("mylog", radiusRangeBar.getRightPinValue() + " RADIUS");
+        return searchFilter;
     }
 
     private void configureMap(){
@@ -270,7 +285,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         } else {
             currentMarker.setPosition(latLng);
         }
-        mapVM.search(this, latLng.latitude, latLng.longitude);
+        mapVM.search(this, getFilterValue(location));
     }
 
     private void moveToLocation(LatLng latLng){
