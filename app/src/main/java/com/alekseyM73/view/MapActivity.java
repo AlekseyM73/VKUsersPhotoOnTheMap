@@ -349,59 +349,59 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         circleList.add(createCircle(
                 lat,
                 lon - (double) 2*radius/3 * ONEGRAD,
-                newRadius));
+                newRadius, Color.RED));
 
 //        areaRigth.setLat(lat);
 //        areaRigth.setLon(lon + (double) 2*radius/3 * ONEGRAD);
         circleList.add(createCircle(
                 lat,
                 lon + (double) 2*radius/3 * ONEGRAD,
-                newRadius));
+                newRadius, Color.MAGENTA));
 
 //        areaLeftTop.setLat(lat + (double) 2*radius/3 * ONEGRAD);
 //        areaLeftTop.setLon(lon - (double) radius/3 * ONEGRAD);
         circleList.add(createCircle(
                 lat + (double) 2*radius/3 * ONEGRAD,
                 lon - (double) radius/3 * ONEGRAD,
-                newRadius));
+                newRadius, Color.GREEN));
 
 //        areaRigthTop.setLat(lat + (double) 2*radius/3 * ONEGRAD);
 //        areaRigthTop.setLon(lon + (double) radius/3 * ONEGRAD);
         circleList.add(createCircle(
                 lat + (double) 2*radius/3 * ONEGRAD,
                 lon + (double) radius/3 * ONEGRAD,
-                newRadius));
+                newRadius, Color.BLUE));
 
 //        areaLeftBot.setLat(lat - (double) 2*radius/3 * ONEGRAD);
 //        areaLeftBot.setLon(lon - (double) radius/3 * ONEGRAD);
         circleList.add(createCircle(
                 lat - (double) 2*radius/3 * ONEGRAD,
                 lon - (double) radius/3 * ONEGRAD,
-                newRadius));
+                newRadius, Color.YELLOW));
 
 //        areaRigthBot.setLat(lat - (double) 2*radius/3 * ONEGRAD);
 //        areaRigthBot.setLon(lon + (double) radius/3 * ONEGRAD);
         circleList.add(createCircle(
                 lat - lat - (double) 2*radius/3 * ONEGRAD,
                 lon + (double) radius/3 * ONEGRAD,
-                newRadius));
+                newRadius, Color.CYAN));
 
 //        areaCentre.setLat(lat);
 //        areaCentre.setLon(lon);
         circleList.add(createCircle(
                 lat,
                 lon,
-                newRadius));
+                newRadius, Color.BLACK));
 
         return circleList;
     }
 
-    private Circle createCircle(double lat, double lon, double radius){
+    private Circle createCircle(double lat, double lon, double radius, int color){
         return mMap.addCircle(new CircleOptions()
                 .center(new LatLng(lat, lon))
                 .radius(radius)
-                .strokeColor(Color.RED)
-                .strokeWidth(2)
+                .strokeColor(color)
+                .strokeWidth(3)
         );
     }
 
