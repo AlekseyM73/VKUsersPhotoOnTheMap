@@ -1,18 +1,18 @@
 package com.alekseyM73.view;
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -25,13 +25,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.alekseyM73.R;
 import com.alekseyM73.adapter.PlaceAutoCompleteAdapter;
 import com.alekseyM73.model.search.Prediction;
-import com.alekseyM73.util.Area;
 import com.alekseyM73.util.GlideApp;
 import com.alekseyM73.util.IconRenderer;
 import com.alekseyM73.util.SearchFilter;
@@ -51,6 +49,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -59,7 +59,6 @@ import com.google.gson.Gson;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
@@ -128,7 +127,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         Button btnApply = bottomS.findViewById(R.id.btn_apply);
         btnApply.setOnClickListener(v -> {
-            mapVM.searchPhotos(this, getFilterValue());
+            search();
         });
 
         reset = findViewById(R.id.reset);
@@ -174,7 +173,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Prediction prediction = (Prediction) parent.getItemAtPosition(position);
             mapVM.getPlaceDetails(prediction);
             vSearch.setText(prediction.getDescription());
+            hideKeyboard();
         });
+    }
+
+    public void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (imm == null) return;
+        View view = getCurrentFocus();
+        if (view == null) {
+            view = new View(this);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
 
@@ -237,6 +247,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                             item.setBitmap(resource);
                             mClusterManager.addItem(item);
+                            mClusterManager.cluster();
                         }
 
                         @Override
@@ -317,49 +328,81 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return searchFilter;
     }
 
-    private ArrayList<Area> setAreas(double lat, double lon){
-        final double ONEGRAD = 0.000009009;
+    private void search(){
         SearchFilter searchFilter = getFilterValue();
-        int radius = Integer.parseInt(searchFilter.getRadius());
-        Area areaLeft = new Area();
-        Area areaRigth = new Area();
-        Area areaLeftTop = new Area();
-        Area areaRigthTop = new Area();
-        Area areaLeftBot = new Area();
-        Area areaRigthBot = new Area();
-        Area areaCentre = new Area();
+        List<Circle> circles = setAreas(mapVM.getLatitude(), mapVM.getLongitude(), Integer.parseInt(searchFilter.getRadius()));
+        mapVM.setCircles(circles);
+//        for (Area a: areaArrayList) {
+//            createCircle(a.getLat(), a.getLon(), (double) Integer.parseInt(filter.getRadius()) / 3);
+//        }
+    }
 
-        areaLeft.setLat(lat);
-        areaLeft.setLon(lon - 2*radius/3 * ONEGRAD);
+    private List<Circle> setAreas(double lat, double lon, int radius){
+        final double ONEGRAD = 0.000009009;
 
-        areaRigth.setLat(lat);
-        areaRigth.setLon(lon + 2*radius/3 * ONEGRAD);
+        List<Circle> circleList = new ArrayList<>();
 
-        areaLeftTop.setLat(lat + 2*radius/3 * ONEGRAD);
-        areaLeftTop.setLon(lon - radius/3 * ONEGRAD);
+        double newRadius = (double) radius / 3;
 
-        areaRigthTop.setLat(lat + 2*radius/3 * ONEGRAD);
-        areaRigthTop.setLon(lon + radius/3 * ONEGRAD);
+//        areaLeft.setLat(lat);
+//        areaLeft.setLon(lon - (double) 2*radius/3 * ONEGRAD);
+        circleList.add(createCircle(
+                lat,
+                lon - (double) 2*radius/3 * ONEGRAD,
+                newRadius));
 
-        areaLeftBot.setLat(lat - 2*radius/3 * ONEGRAD);
-        areaLeftBot.setLon(lon - radius/3 * ONEGRAD);
+//        areaRigth.setLat(lat);
+//        areaRigth.setLon(lon + (double) 2*radius/3 * ONEGRAD);
+        circleList.add(createCircle(
+                lat,
+                lon + (double) 2*radius/3 * ONEGRAD,
+                newRadius));
 
-        areaRigthBot.setLat(lat - 2*radius/3 * ONEGRAD);
-        areaRigthBot.setLon(lon + radius/3 * ONEGRAD);
+//        areaLeftTop.setLat(lat + (double) 2*radius/3 * ONEGRAD);
+//        areaLeftTop.setLon(lon - (double) radius/3 * ONEGRAD);
+        circleList.add(createCircle(
+                lat + (double) 2*radius/3 * ONEGRAD,
+                lon - (double) radius/3 * ONEGRAD,
+                newRadius));
 
-        areaCentre.setLat(lat);
-        areaCentre.setLon(lon);
+//        areaRigthTop.setLat(lat + (double) 2*radius/3 * ONEGRAD);
+//        areaRigthTop.setLon(lon + (double) radius/3 * ONEGRAD);
+        circleList.add(createCircle(
+                lat + (double) 2*radius/3 * ONEGRAD,
+                lon + (double) radius/3 * ONEGRAD,
+                newRadius));
 
-        ArrayList<Area> areaArrayList = new ArrayList<>();
-        areaArrayList.add(areaCentre);
-        areaArrayList.add(areaLeft);
-        areaArrayList.add(areaLeftBot);
-        areaArrayList.add(areaLeftTop);
-        areaArrayList.add(areaRigth);
-        areaArrayList.add(areaRigthBot);
-        areaArrayList.add(areaRigthTop);
+//        areaLeftBot.setLat(lat - (double) 2*radius/3 * ONEGRAD);
+//        areaLeftBot.setLon(lon - (double) radius/3 * ONEGRAD);
+        circleList.add(createCircle(
+                lat - (double) 2*radius/3 * ONEGRAD,
+                lon - (double) radius/3 * ONEGRAD,
+                newRadius));
 
-        return areaArrayList;
+//        areaRigthBot.setLat(lat - (double) 2*radius/3 * ONEGRAD);
+//        areaRigthBot.setLon(lon + (double) radius/3 * ONEGRAD);
+        circleList.add(createCircle(
+                lat - lat - (double) 2*radius/3 * ONEGRAD,
+                lon + (double) radius/3 * ONEGRAD,
+                newRadius));
+
+//        areaCentre.setLat(lat);
+//        areaCentre.setLon(lon);
+        circleList.add(createCircle(
+                lat,
+                lon,
+                newRadius));
+
+        return circleList;
+    }
+
+    private Circle createCircle(double lat, double lon, double radius){
+        return mMap.addCircle(new CircleOptions()
+                .center(new LatLng(lat, lon))
+                .radius(radius)
+                .strokeColor(Color.RED)
+                .strokeWidth(2)
+        );
     }
 
     private void showMyLocation(double lat, double lon) {
@@ -377,11 +420,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             currentMarker.setPosition(latLng);
         }
         moveToLocation(latLng);
-        ArrayList<Area> areaArrayList = setAreas(lat, lon);
-        //TODO: Добавить аргумент объект класса Area к функции searchPhotos и брать из них новые lat lon
-        for (Area a: areaArrayList) {
-            mapVM.searchPhotos(this, getFilterValue());
-        }
     }
 
     private void moveToLocation(LatLng latLng){

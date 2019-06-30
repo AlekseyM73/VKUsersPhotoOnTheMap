@@ -37,11 +37,6 @@
             android:value="AIzaSyDXkS_AWPza1PFmGLPrA7052kffQL38LSU" />
 
         <activity android:name=".view.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <activity

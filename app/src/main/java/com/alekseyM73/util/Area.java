@@ -1,6 +1,7 @@
 package com.alekseyM73.util;
 
 public class Area {
+
     private double lat;
     private double lon;
 

@@ -17,9 +17,9 @@ import com.alekseyM73.model.search.Prediction;
 import com.alekseyM73.repository.ApiRepository;
 import com.alekseyM73.util.Preferences;
 import com.alekseyM73.util.SearchFilter;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.libraries.places.api.internal.impl.net.pablo.PlaceResult;
+import com.google.android.gms.maps.model.Circle;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,6 +36,7 @@ public class MapVM extends AndroidViewModel {
     private MutableLiveData<List<Prediction>> predictions = new MutableLiveData<>();
     private MutableLiveData<PlaceLocation> location = new MutableLiveData<>();
     private double lat, lon;
+    private List<Circle> circles = new ArrayList<>();
 
     public MapVM(@NonNull Application application) {
         super(application);
@@ -66,6 +67,20 @@ public class MapVM extends AndroidViewModel {
         this.lon = lon;
     }
 
+    public double getLatitude() {
+        return lat;
+    }
+
+    public double getLongitude() {
+        return lon;
+    }
+
+    public void setCircles(List<Circle> circles) {
+        for (Circle circle : this.circles){
+            circle.remove();
+        }
+        this.circles = circles;
+    }
 
     @SuppressLint("CheckResult")
     public void searchPhotos(Context context, SearchFilter searchFilter){
