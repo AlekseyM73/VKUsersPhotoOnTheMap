@@ -66,6 +66,7 @@ public class MapVM extends AndroidViewModel {
         this.lon = lon;
     }
 
+
     @SuppressLint("CheckResult")
     public void searchPhotos(Context context, SearchFilter searchFilter){
         if (accessToken == null){

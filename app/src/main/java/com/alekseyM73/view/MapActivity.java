@@ -31,6 +31,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.alekseyM73.R;
 import com.alekseyM73.adapter.PlaceAutoCompleteAdapter;
 import com.alekseyM73.model.search.Prediction;
+import com.alekseyM73.util.Area;
 import com.alekseyM73.util.GlideApp;
 import com.alekseyM73.util.IconRenderer;
 import com.alekseyM73.util.SearchFilter;
@@ -57,6 +58,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.Gson;
 import com.google.maps.android.clustering.ClusterManager;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -175,14 +177,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
     }
 
-    private SearchFilter getFilterValue(){
-        SearchFilter searchFilter = new SearchFilter();
-        searchFilter.setAgeStart(ageRangeBar.getLeftPinValue());
-        searchFilter.setAgeFinish(ageRangeBar.getRightPinValue());
-        String[] radiusArray = getResources().getStringArray(R.array.radius_list);
-        searchFilter.setRadius(radiusArray[radiusRangeBar.getRightIndex()]);
-        return searchFilter;
-    }
 
     private void configureMap(){
         SupportMapFragment mapFragment =
@@ -314,6 +308,60 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .show();
     }
 
+    private SearchFilter getFilterValue(){
+        SearchFilter searchFilter = new SearchFilter();
+        searchFilter.setAgeStart(ageRangeBar.getLeftPinValue());
+        searchFilter.setAgeFinish(ageRangeBar.getRightPinValue());
+        String[] radiusArray = getResources().getStringArray(R.array.radius_list);
+        searchFilter.setRadius(radiusArray[radiusRangeBar.getRightIndex()]);
+        return searchFilter;
+    }
+
+    private ArrayList<Area> setAreas(double lat, double lon){
+        final double ONEGRAD = 0.000009009;
+        SearchFilter searchFilter = getFilterValue();
+        int radius = Integer.parseInt(searchFilter.getRadius());
+        Area areaLeft = new Area();
+        Area areaRigth = new Area();
+        Area areaLeftTop = new Area();
+        Area areaRigthTop = new Area();
+        Area areaLeftBot = new Area();
+        Area areaRigthBot = new Area();
+        Area areaCentre = new Area();
+
+        areaLeft.setLat(lat);
+        areaLeft.setLon(lon - 2*radius/3 * ONEGRAD);
+
+        areaRigth.setLat(lat);
+        areaRigth.setLon(lon + 2*radius/3 * ONEGRAD);
+
+        areaLeftTop.setLat(lat + 2*radius/3 * ONEGRAD);
+        areaLeftTop.setLon(lon - radius/3 * ONEGRAD);
+
+        areaRigthTop.setLat(lat + 2*radius/3 * ONEGRAD);
+        areaRigthTop.setLon(lon + radius/3 * ONEGRAD);
+
+        areaLeftBot.setLat(lat - 2*radius/3 * ONEGRAD);
+        areaLeftBot.setLon(lon - radius/3 * ONEGRAD);
+
+        areaRigthBot.setLat(lat - 2*radius/3 * ONEGRAD);
+        areaRigthBot.setLon(lon + radius/3 * ONEGRAD);
+
+        areaCentre.setLat(lat);
+        areaCentre.setLon(lon);
+
+        ArrayList<Area> areaArrayList = new ArrayList<>();
+        areaArrayList.add(areaCentre);
+        areaArrayList.add(areaLeft);
+        areaArrayList.add(areaLeftBot);
+        areaArrayList.add(areaLeftTop);
+        areaArrayList.add(areaRigth);
+        areaArrayList.add(areaRigthBot);
+        areaArrayList.add(areaRigthTop);
+
+        return areaArrayList;
+    }
+
     private void showMyLocation(double lat, double lon) {
         LatLng latLng = new LatLng(lat, lon);
         mapVM.setLocation(lat, lon);
@@ -329,7 +377,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             currentMarker.setPosition(latLng);
         }
         moveToLocation(latLng);
-        mapVM.searchPhotos(this, getFilterValue());
+        ArrayList<Area> areaArrayList = setAreas(lat, lon);
+        //TODO: Добавить аргумент объект класса Area к функции searchPhotos и брать из них новые lat lon
+        for (Area a: areaArrayList) {
+            mapVM.searchPhotos(this, getFilterValue());
+        }
     }
 
     private void moveToLocation(LatLng latLng){
