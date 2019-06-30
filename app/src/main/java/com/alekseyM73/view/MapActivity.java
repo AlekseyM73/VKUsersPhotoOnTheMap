@@ -338,7 +338,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private List<Circle> setAreas(double lat, double lon, int radius){
-        final double ONEGRAD = 0.00001033;
+        final double ONEGRAD = 0.00001038; //подгон, исходное значение 0.000009009
 
         List<Circle> circleList = new ArrayList<>();
 
@@ -361,28 +361,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //        areaLeftTop.setLat(lat + (double) 2*radius/3 * ONEGRAD);
 //        areaLeftTop.setLon(lon - (double) radius/3 * ONEGRAD);
         circleList.add(createCircle(
-                lat + (double) radius/2 * ONEGRAD + 0.00003, //0.00003 подгон
+                lat + (double) radius/2 * ONEGRAD, //0.00003 подгон
                 lon - (double) radius/2 * ONEGRAD,
                 newRadius, Color.GREEN));
 
 //        areaRigthTop.setLat(lat + (double) 2*radius/3 * ONEGRAD);
 //        areaRigthTop.setLon(lon + (double) radius/3 * ONEGRAD);
         circleList.add(createCircle(
-                lat + (double) radius/2 * ONEGRAD + 0.00003,
+                lat + (double) radius/2 * ONEGRAD,
                 lon + (double) radius/2 * ONEGRAD,
                 newRadius, Color.BLUE));
 
 //        areaLeftBot.setLat(lat - (double) 2*radius/3 * ONEGRAD);
 //        areaLeftBot.setLon(lon - (double) radius/3 * ONEGRAD);
         circleList.add(createCircle(
-                lat - (double) radius/2 * ONEGRAD - 0.00003,
+                lat - (double) radius/2 * ONEGRAD,
                 lon - (double) radius/2 * ONEGRAD,
                 newRadius, Color.YELLOW));
 
 //        areaRigthBot.setLat(lat - (double) 2*radius/3 * ONEGRAD);
 //        areaRigthBot.setLon(lon + (double) radius/3 * ONEGRAD);
         circleList.add(createCircle(
-                lat - (double) radius/2 * ONEGRAD - 0.00003,
+                lat - (double) radius/2 * ONEGRAD,
                 lon + (double) radius/2 * ONEGRAD,
                 newRadius, Color.CYAN));
 
