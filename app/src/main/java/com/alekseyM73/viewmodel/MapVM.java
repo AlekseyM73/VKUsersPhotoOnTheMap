@@ -3,6 +3,7 @@ package com.alekseyM73.viewmodel;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.location.Location;
 import android.util.Log;
 import android.view.View;
 
@@ -12,9 +13,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.alekseyM73.model.photo.Item;
+import com.alekseyM73.model.photo.PhotosResponse;
 import com.alekseyM73.model.place.PlaceLocation;
 import com.alekseyM73.model.search.Prediction;
 import com.alekseyM73.repository.ApiRepository;
+import com.alekseyM73.util.Area;
 import com.alekseyM73.util.Preferences;
 import com.alekseyM73.util.SearchFilter;
 import com.google.android.gms.maps.model.Circle;
@@ -22,15 +25,17 @@ import com.google.android.gms.maps.model.Circle;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MapVM extends AndroidViewModel {
 
     private ApiRepository apiRepository = new ApiRepository();
     private String accessToken = null;
-    private MutableLiveData<LinkedList<Item>> photos = new MutableLiveData<>();
+    private MutableLiveData<Set<Item>> photos = new MutableLiveData<>();
     private MutableLiveData<Integer> progress = new MutableLiveData<>();
     private MutableLiveData<String> message = new MutableLiveData<>();
     private MutableLiveData<List<Prediction>> predictions = new MutableLiveData<>();
@@ -42,7 +47,7 @@ public class MapVM extends AndroidViewModel {
         super(application);
     }
 
-    public LiveData<LinkedList<Item>> getPhotos(){
+    public LiveData<Set<Item>> getPhotos(){
         return photos;
     }
 
@@ -83,29 +88,45 @@ public class MapVM extends AndroidViewModel {
     }
 
     @SuppressLint("CheckResult")
-    public void searchPhotos(Context context, SearchFilter searchFilter){
+    public void searchPhotos(Context context, SearchFilter searchFilter, List<Area> areas){
         if (accessToken == null){
             accessToken = new Preferences().getToken(context);
         }
         Date date = new Date();
         Map<String, String> options = new HashMap<>();
 //        options.put("end_time", String.valueOf(date.getTime() / 1000));
-        options.put("lat", String.valueOf(lat));
-        options.put("long", String.valueOf(lon));
+//        options.put("lat", String.valueOf(lat));
+//        options.put("long", String.valueOf(lon));
         options.put("start_time", "1561334400");
+//        int radius = Integer.parseInt(searchFilter.getRadius());
+//        options.put("radius", String.valueOf(radius/3));
         options.put("radius", searchFilter.getRadius());
-        options.put("count", "200");
+        options.put("count", "100");
         options.put("sort", "0");
         options.put("v", "5.95");
         options.put("access_token", accessToken);
 
-        apiRepository.searchPhotos(options)
-                .subscribe(photosResponse -> {
-                    if (photosResponse.getResponse() != null){
-                        if (photosResponse.getResponse().getCount() == 0){
+        apiRepository.search(areas, options)
+                .subscribe(photosResponseList -> {
+//                    if (photosResponse.getResponse() != null){
+//                        if (photosResponse.getResponse().getCount() == 0){
+//                            message.setValue("Упс! Здесь ничего нет");
+//                        }
+//                        photos.setValue(new LinkedList<>(photosResponse.getResponse().getItems()));
+//                        System.out.println("--------- SIZE = " + photosResponse.getResponse().getItems().size());
+//                    } else {
+//                        message.setValue("Ничего не найдено");
+//                    }
+                    if (photosResponseList != null){
+                        Set<Item> set = new HashSet<>();
+                        for (PhotosResponse response: photosResponseList){
+                            set.addAll(response.getResponse().getItems());
+                        }
+                        photos.setValue(set);
+                        System.out.println("------ SIZE = " + set.size());
+                        if (set.size() == 0){
                             message.setValue("Упс! Здесь ничего нет");
                         }
-                        photos.setValue(new LinkedList<>(photosResponse.getResponse().getItems()));
                     } else {
                         message.setValue("Ничего не найдено");
                     }
@@ -139,11 +160,10 @@ public class MapVM extends AndroidViewModel {
         apiRepository.searchPlaceDetails(prediction.getPlaceId()).
                 subscribe(placeDetailsResponse -> {
                     if (placeDetailsResponse != null && placeDetailsResponse.getResult() != null){
-                        location.setValue(placeDetailsResponse.getResult().getGeometry().getLocation());
-                        if (location.getValue() != null) {
-                            lat = location.getValue().getLat();
-                            lat = location.getValue().getLng();
-                        }
+                        PlaceLocation loc = placeDetailsResponse.getResult().getGeometry().getLocation();
+                        location.setValue(loc);
+                        lat = loc.getLat();
+                        lon = loc.getLng();
                     }
                 }, throwable -> {
                     throwable.printStackTrace();

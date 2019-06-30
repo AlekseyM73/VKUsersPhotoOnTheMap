@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.alekseyM73.R;
 import com.alekseyM73.adapter.PlaceAutoCompleteAdapter;
 import com.alekseyM73.model.search.Prediction;
+import com.alekseyM73.util.Area;
 import com.alekseyM73.util.GlideApp;
 import com.alekseyM73.util.IconRenderer;
 import com.alekseyM73.util.SearchFilter;
@@ -60,6 +61,7 @@ import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 
@@ -110,7 +112,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         sexRadioGroup = findViewById(R.id.sex_group);
         radiusRangeBar = findViewById(R.id.rangeBar_radius);
         ageRangeBar = findViewById(R.id.rangeBar_age);
-        radiusRangeBar.setSeekPinByIndex(0);
+        radiusRangeBar.setSeekPinByIndex(1);
 
         vSearch = bottomS.findViewById(R.id.input_search);
         progressBar = bottomS.findViewById(R.id.progress_bar);
@@ -229,15 +231,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
+        mMap.setOnMarkerDragListener(this);
 
     }
 
-    private void addItems(List<Item> items) {
+    private void addItems(Set<Item> items) {
         mClusterManager.clearItems();
+        mClusterManager.cluster();
 
         for (Item item : items) {
             if (item.getLat() == null || item.getLong() == null){
-                return;
+                continue;
             }
             GlideApp.with(this)
                     .asBitmap()
@@ -252,7 +256,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                         @Override
                         public void onLoadCleared(@Nullable Drawable placeholder) {
-//                            mClusterManager.addItem(mapItem);
                         }
             });
         }
@@ -330,70 +333,62 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void search(){
         SearchFilter searchFilter = getFilterValue();
-        List<Circle> circles = setAreas(mapVM.getLatitude(), mapVM.getLongitude(), Integer.parseInt(searchFilter.getRadius()));
-        mapVM.setCircles(circles);
-//        for (Area a: areaArrayList) {
-//            createCircle(a.getLat(), a.getLon(), (double) Integer.parseInt(filter.getRadius()) / 3);
-//        }
+        mapVM.searchPhotos(this, searchFilter,
+                setAreas(mapVM.getLatitude(), mapVM.getLongitude(), Integer.parseInt(searchFilter.getRadius())));
     }
 
-    private List<Circle> setAreas(double lat, double lon, int radius){
+    private List<Area> setAreas(double lat, double lon, int radius){
         final double ONEGRAD = 0.00001038; //подгон, исходное значение 0.000009009
 
-        List<Circle> circleList = new ArrayList<>();
+//        List<Circle> circleList = new ArrayList<>();
+        List<Area> areas = new ArrayList<>();
 
         double newRadius = (double) radius / 3;
 
-//        areaLeft.setLat(lat);
-//        areaLeft.setLon(lon - (double) 2*radius/3 * ONEGRAD);
-        circleList.add(createCircle(
-                lat,
-                lon - (double) radius * ONEGRAD,
-                newRadius, Color.RED));
+//        circleList.add(createCircle(
+//                lat,
+//                lon - (double) radius * ONEGRAD,
+//                newRadius, Color.RED));
+        areas.add(new Area(lat, lon - (double) radius * ONEGRAD));
 
-//        areaRigth.setLat(lat);
-//        areaRigth.setLon(lon + (double) 2*radius/3 * ONEGRAD);
-        circleList.add(createCircle(
-                lat,
-                lon + (double) radius * ONEGRAD,
-                newRadius, Color.MAGENTA));
+//        circleList.add(createCircle(
+//                lat,
+//                lon + (double) radius * ONEGRAD,
+//                newRadius, Color.MAGENTA));
+        areas.add(new Area(lat, lon + (double) radius * ONEGRAD));
 
-//        areaLeftTop.setLat(lat + (double) 2*radius/3 * ONEGRAD);
-//        areaLeftTop.setLon(lon - (double) radius/3 * ONEGRAD);
-        circleList.add(createCircle(
-                lat + (double) radius/2 * ONEGRAD, //0.00003 подгон
-                lon - (double) radius/2 * ONEGRAD,
-                newRadius, Color.GREEN));
+//        circleList.add(createCircle(
+//                lat + (double) radius/2 * ONEGRAD, //0.00003 подгон
+//                lon - (double) radius/2 * ONEGRAD,
+//                newRadius, Color.GREEN));
+        areas.add(new Area(lat + (double) radius/2 * ONEGRAD, lon - (double) radius/2 * ONEGRAD));
 
-//        areaRigthTop.setLat(lat + (double) 2*radius/3 * ONEGRAD);
-//        areaRigthTop.setLon(lon + (double) radius/3 * ONEGRAD);
-        circleList.add(createCircle(
-                lat + (double) radius/2 * ONEGRAD,
-                lon + (double) radius/2 * ONEGRAD,
-                newRadius, Color.BLUE));
+//        circleList.add(createCircle(
+//                lat + (double) radius/2 * ONEGRAD,
+//                lon + (double) radius/2 * ONEGRAD,
+//                newRadius, Color.BLUE));
+        areas.add(new Area(lat + (double) radius/2 * ONEGRAD, lon + (double) radius/2 * ONEGRAD));
 
-//        areaLeftBot.setLat(lat - (double) 2*radius/3 * ONEGRAD);
-//        areaLeftBot.setLon(lon - (double) radius/3 * ONEGRAD);
-        circleList.add(createCircle(
-                lat - (double) radius/2 * ONEGRAD,
-                lon - (double) radius/2 * ONEGRAD,
-                newRadius, Color.YELLOW));
+//        circleList.add(createCircle(
+//                lat - (double) radius/2 * ONEGRAD,
+//                lon - (double) radius/2 * ONEGRAD,
+//                newRadius, Color.YELLOW));
+        areas.add(new Area(lat - (double) radius/2 * ONEGRAD, lon - (double) radius/2 * ONEGRAD));
 
-//        areaRigthBot.setLat(lat - (double) 2*radius/3 * ONEGRAD);
-//        areaRigthBot.setLon(lon + (double) radius/3 * ONEGRAD);
-        circleList.add(createCircle(
-                lat - (double) radius/2 * ONEGRAD,
-                lon + (double) radius/2 * ONEGRAD,
-                newRadius, Color.CYAN));
+//        circleList.add(createCircle(
+//                lat - (double) radius/2 * ONEGRAD,
+//                lon + (double) radius/2 * ONEGRAD,
+//                newRadius, Color.CYAN));
+        areas.add(new Area(lat - (double) radius/2 * ONEGRAD, lon + (double) radius/2 * ONEGRAD));
 
-//        areaCentre.setLat(lat);
-//        areaCentre.setLon(lon);
-        circleList.add(createCircle(
-                lat,
-                lon,
-                newRadius, Color.BLACK));
+//        circleList.add(createCircle(
+//                lat,
+//                lon,
+//                newRadius, Color.BLACK));
+        areas.add(new Area(lat, lon));
 
-        return circleList;
+//        mapVM.setCircles(circleList);
+        return areas;
     }
 
     private Circle createCircle(double lat, double lon, double radius, int color){
@@ -443,16 +438,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onMarkerDragStart(Marker marker) {
-
     }
 
     @Override
     public void onMarkerDrag(Marker marker) {
-
     }
 
     @Override
     public void onMarkerDragEnd(Marker marker) {
-        Toast.makeText(this, marker.getPosition().toString(), Toast.LENGTH_SHORT).show();;
+        mapVM.setLocation(marker.getPosition().latitude, marker.getPosition().longitude);
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
     }
 }

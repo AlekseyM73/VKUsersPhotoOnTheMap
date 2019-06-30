@@ -5,6 +5,14 @@ public class Area {
     private double lat;
     private double lon;
 
+    public Area() {
+    }
+
+    public Area(double lat, double lon) {
+        this.lat = lat;
+        this.lon = lon;
+    }
+
     public double getLat() {
         return lat;
     }

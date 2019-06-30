@@ -1,18 +1,15 @@
 package com.alekseyM73.util;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 import com.alekseyM73.R;
 import com.alekseyM73.model.photo.Item;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
@@ -52,7 +49,6 @@ public class IconRenderer extends DefaultClusterRenderer<Item> {
     @Override
     protected void onBeforeClusterItemRendered(Item item, MarkerOptions markerOptions) {
         mImageView.setImageBitmap(item.getBitmap());
-        mImageView.setImageBitmap(item.getBitmap());
         Bitmap icon = mIconGenerator.makeIcon();
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
     }
@@ -72,7 +68,9 @@ public class IconRenderer extends DefaultClusterRenderer<Item> {
         MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
         multiDrawable.setBounds(0, 0, width, height);
 
+        Bitmap bitmap = cluster.getItems().iterator().next().getBitmap();
         mClusterImageView.setImageDrawable(multiDrawable);
+        mClusterImageView.setImageBitmap(bitmap);
         Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
 
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));

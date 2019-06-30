@@ -9,6 +9,7 @@ import com.google.maps.android.clustering.ClusterItem;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 public class Item implements ClusterItem{
 
@@ -135,6 +136,19 @@ public class Item implements ClusterItem{
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Item)) return false;
+        Item item = (Item) o;
+        return getId().equals(item.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
+
+    @Override
     public String toString() {
         return "Item{" +
                 "id=" + id +
@@ -148,6 +162,8 @@ public class Item implements ClusterItem{
                 ", userId=" + userId +
                 '}';
     }
+
+
 
     @Override
     public LatLng getPosition() {

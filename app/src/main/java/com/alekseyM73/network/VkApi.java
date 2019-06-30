@@ -30,9 +30,9 @@ public interface VkApi {
 //            @Query("radius") int radius);
 
     @GET("photos.search?")
-    Observable<PhotosResponse> getPhotos(@QueryMap Map<String, String> options);
+    Observable<PhotosResponse> getPhotos(@Query("lat") double lat, @Query("long") double lon, @QueryMap Map<String, String> options);
 
-    @GET("users.get?v=5.52&fields=sex,bdate")
+    @GET("users.get?v=5.52&fields=sex,bdate,city")
     Observable<UserInfoResponse> getUserInfo(@Query("user_id") long id, @Query("access_token") String token);
 
     @GET()

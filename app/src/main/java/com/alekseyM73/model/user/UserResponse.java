@@ -27,6 +27,10 @@ public class UserResponse implements Serializable {
     @Expose
     private String bdate;
 
+    @SerializedName("city")
+    @Expose
+    private UserCity city;
+
     public Long getId() {
         return id;
     }
@@ -65,5 +69,13 @@ public class UserResponse implements Serializable {
 
     public void setBdate(String bdate) {
         this.bdate = bdate;
+    }
+
+    public UserCity getCity() {
+        return city;
+    }
+
+    public void setCity(UserCity city) {
+        this.city = city;
     }
 }

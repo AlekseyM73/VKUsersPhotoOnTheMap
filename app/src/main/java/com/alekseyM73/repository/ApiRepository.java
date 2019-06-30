@@ -5,8 +5,11 @@ import com.alekseyM73.model.place.PlaceDetailsResponse;
 import com.alekseyM73.model.search.PlaceSearchResponse;
 import com.alekseyM73.network.ApiService;
 import com.alekseyM73.network.VkApi;
+import com.alekseyM73.util.Area;
 
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -20,10 +23,22 @@ public class ApiRepository {
         service = ApiService.getRetrofit().create(VkApi.class);
     }
 
-    public Observable<PhotosResponse> searchPhotos(Map<String, String> options){
-        return service.getPhotos(options).
+    public Observable<PhotosResponse> searchPhotos(double lat, double lon, Map<String, String> options){
+        return service.getPhotos(lat, lon, options).
                 subscribeOn(Schedulers.io()).
                 observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<List<PhotosResponse>> search(List<Area> list, Map<String, String> options){
+        return Observable.fromIterable(list)
+                .concatMap(item ->
+                        Observable.interval(300, TimeUnit.MICROSECONDS)
+                                .subscribeOn(Schedulers.io())
+                                .take(1)
+                                .flatMap(second -> service.getPhotos(item.getLat(), item.getLon(), options)))
+                .toList().toObservable()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<PlaceSearchResponse> searchPlace(String text){
