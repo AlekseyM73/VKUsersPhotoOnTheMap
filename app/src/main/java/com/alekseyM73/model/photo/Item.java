@@ -2,6 +2,7 @@ package com.alekseyM73.model.photo;
 
 import android.graphics.Bitmap;
 
+import com.alekseyM73.model.user.UserResponse;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -53,6 +54,8 @@ public class Item implements ClusterItem{
     @Expose
     private Long userId;
 
+    private UserResponse user;
+
     private transient Bitmap bitmap;
 
     public Long getId() {
@@ -76,7 +79,7 @@ public class Item implements ClusterItem{
     }
 
     public void setOwnerId(Long ownerId) {
-        this.ownerId = ownerId;
+        this.ownerId = Math.abs(ownerId);
     }
 
     public String getText() {
@@ -103,12 +106,12 @@ public class Item implements ClusterItem{
         this.lat = lat;
     }
 
-    public Double getLong() {
+    public Double getLon() {
         return lon;
     }
 
-    public void setLong(Double _long) {
-        this.lon = _long;
+    public void setLon(Double lon) {
+        this.lon = lon;
     }
 
     public Long getPostId() {
@@ -133,6 +136,14 @@ public class Item implements ClusterItem{
 
     public void setPhotos(List<Photo> photos) {
         this.photos = photos;
+    }
+
+    public UserResponse getUser() {
+        return user;
+    }
+
+    public void setUser(UserResponse user) {
+        this.user = user;
     }
 
     @Override

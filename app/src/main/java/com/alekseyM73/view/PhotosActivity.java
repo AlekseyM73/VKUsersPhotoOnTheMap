@@ -1,18 +1,16 @@
 package com.alekseyM73.view;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.alekseyM73.PhotoListener;
 import com.alekseyM73.R;
 import com.alekseyM73.adapter.PhotosAdapter;
 import com.alekseyM73.model.photo.Item;
@@ -23,13 +21,14 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.LinkedList;
 
-public class PhotosActivity extends AppCompatActivity {
+public class PhotosActivity extends AppCompatActivity implements PhotoListener {
 
     private PhotosVM photosVM;
     private PhotosAdapter adapter;
     private RecyclerView recyclerView;
 
-    public static final String KEY_DATA = "com.alekseyM73.view.photos_activity.items";
+    public static final String KEY_PHOTOS = "com.alekseyM73.view.photos_activity.photos";
+    public static final String KEY_USERS = "com.alekseyM73.view.photos_activity.users";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,7 +36,7 @@ public class PhotosActivity extends AppCompatActivity {
         setContentView(R.layout.activity_photos);
 
         recyclerView = findViewById(R.id.rv_photos);
-        adapter = new PhotosAdapter(new LinkedList<>());
+        adapter = new PhotosAdapter(new LinkedList<>(), this::onClick);
         recyclerView.setAdapter(adapter);
 
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -53,10 +52,8 @@ public class PhotosActivity extends AppCompatActivity {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         });
 
-        setListeners();
-
         if (getIntent().getExtras() != null){
-            String json = getIntent().getStringExtra(KEY_DATA);
+            String json = getIntent().getStringExtra(KEY_PHOTOS);
             Gson gson = new Gson();
             Type listType = new TypeToken<LinkedList<Item>>(){}.getType();
             LinkedList<Item> mapItems = gson.fromJson(json, listType);
@@ -64,30 +61,13 @@ public class PhotosActivity extends AppCompatActivity {
         }
     }
 
-    private void setListeners() {
-//        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-//            }
-//
-//            @Override
-//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-//                if (button.getVisibility() == View.VISIBLE) {
-//                    if (dy > 0) {
-//                        button.animate().translationY(0).start();
-//                    } else {
-//                        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) button.getLayoutParams();
-//                        int fab_bottomMargin = layoutParams.bottomMargin;
-//                        button.animate().translationY(button.getHeight() + fab_bottomMargin).start();
-//
-//                    }
-//                }
-//            }
-//        });
-//
-//        button.setOnClickListener(listener -> {
-//            photosVM.loadMore();
-//        });
-    }
 
+    @Override
+    public void onClick(Item item) {
+        Intent intent = new Intent(PhotosActivity.this, InfoActivity.class);
+        intent.putExtra(InfoActivity.USER, item.getUser());
+        intent.putExtra(InfoActivity.PHOTO_URL, item.getPhotos().get(item.getPhotos().size()-1).getUrl());
+        intent.putExtra(InfoActivity.ALBUM_ID, item.getAlbumId());
+        startActivity(intent);
+    }
 }

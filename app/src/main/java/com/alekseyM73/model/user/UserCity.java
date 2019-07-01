@@ -3,7 +3,9 @@ package com.alekseyM73.model.user;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class UserCity {
+import java.io.Serializable;
+
+public class UserCity implements Serializable {
 
     @Expose
     @SerializedName("id")

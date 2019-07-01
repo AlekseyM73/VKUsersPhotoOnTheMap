@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -92,7 +93,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_map);
 
         configureMap();
-        setViews();
 
         locationClient = LocationServices.getFusedLocationProviderClient(this);
     }
@@ -102,7 +102,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         vGoToLocation.setOnClickListener(v -> {
             if (currentMarker != null) {
-                moveToLocation(currentMarker.getPosition());
+                findLocation();
             }
         });
 
@@ -134,9 +134,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         reset = findViewById(R.id.reset);
         reset.setOnClickListener(listener ->{
-            radiusRangeBar.setSeekPinByIndex(0);
+            vSearch.setText("");
+            radiusRangeBar.setSeekPinByIndex(1);
             ageRangeBar.setRangePinsByValue(ageRangeBar.getTickStart(), ageRangeBar.getTickEnd());
             sexRadioGroup.check(R.id.sex_any);
+            mapVM.reset(getFilterValue());
         });
 
         mapVM = ViewModelProviders.of(this).get(MapVM.class);
@@ -147,7 +149,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
 
         mapVM.getMessage().observe(this, message ->{
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            if (message != null) {
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            }
         });
         mapVM.getProgress().observe(this, visibility -> {
             progressBar.setVisibility(visibility);
@@ -224,8 +228,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mClusterManager.setOnClusterClickListener(cluster -> {
             Gson gson = new Gson();
             String json = gson.toJson(cluster.getItems());
-            startActivity(new Intent(MapActivity.this, PhotosActivity.class)
-                    .putExtra(PhotosActivity.KEY_DATA, json));
+            startActivity(
+                    new Intent(MapActivity.this, PhotosActivity.class)
+                            .putExtra(PhotosActivity.KEY_PHOTOS, json)
+            );
+            return false;
+        });
+        mClusterManager.setOnClusterItemClickListener(item -> {
+            Intent intent = new Intent(MapActivity.this, InfoActivity.class);
+            intent.putExtra(InfoActivity.USER, item.getUser());
+            intent.putExtra(InfoActivity.PHOTO_URL, item.getPhotos().get(item.getPhotos().size()-1).getUrl());
+            intent.putExtra(InfoActivity.ALBUM_ID, item.getAlbumId());
+            startActivity(intent);
             return false;
         });
 
@@ -233,14 +247,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.setOnMarkerClickListener(mClusterManager);
         mMap.setOnMarkerDragListener(this);
 
+        setViews();
     }
 
     private void addItems(Set<Item> items) {
+        if (mClusterManager == null) return;
         mClusterManager.clearItems();
         mClusterManager.cluster();
 
         for (Item item : items) {
-            if (item.getLat() == null || item.getLong() == null){
+            if (item.getLat() == null || item.getLon() == null){
                 continue;
             }
             GlideApp.with(this)
@@ -327,7 +343,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         searchFilter.setAgeStart(ageRangeBar.getLeftPinValue());
         searchFilter.setAgeFinish(ageRangeBar.getRightPinValue());
         String[] radiusArray = getResources().getStringArray(R.array.radius_list);
-        searchFilter.setRadius(radiusArray[radiusRangeBar.getRightIndex()]);
+        int radius = Integer.parseInt(radiusArray[radiusRangeBar.getRightIndex()]);
+        searchFilter.setRadius(String.valueOf(radius/3));
+
+        RadioButton myRadioButton = findViewById(sexRadioGroup.getCheckedRadioButtonId());
+        int index = sexRadioGroup.indexOfChild(myRadioButton);
+        switch (index){
+            case 0: {
+                searchFilter.setSex(0);
+                break;
+            }
+            case 1: {
+                searchFilter.setSex(2);
+                break;
+            }
+            case 2: {
+                searchFilter.setSex(1);
+                break;
+            }
+        }
         return searchFilter;
     }
 
@@ -343,43 +377,43 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //        List<Circle> circleList = new ArrayList<>();
         List<Area> areas = new ArrayList<>();
 
-        double newRadius = (double) radius / 3;
+        double newRadius = (double) (radius / 3) * 2 ;
 
 //        circleList.add(createCircle(
 //                lat,
 //                lon - (double) radius * ONEGRAD,
 //                newRadius, Color.RED));
-        areas.add(new Area(lat, lon - (double) newRadius*2 * ONEGRAD));
+        areas.add(new Area(lat, lon - newRadius * ONEGRAD));
 
 //        circleList.add(createCircle(
 //                lat,
 //                lon + (double) radius * ONEGRAD,
 //                newRadius, Color.MAGENTA));
-        areas.add(new Area(lat, lon + (double) newRadius*2 * ONEGRAD));
+        areas.add(new Area(lat, lon + newRadius * ONEGRAD));
 
 //        circleList.add(createCircle(
 //                lat + (double) radius/2 * ONEGRAD, //0.00003 подгон
 //                lon - (double) radius/2 * ONEGRAD,
 //                newRadius, Color.GREEN));
-        areas.add(new Area(lat + (double) newRadius*2 * ONEGRAD, lon - (double) newRadius*2 * ONEGRAD));
+        areas.add(new Area(lat + newRadius * ONEGRAD, lon - newRadius * ONEGRAD));
 
 //        circleList.add(createCircle(
 //                lat + (double) radius/2 * ONEGRAD,
 //                lon + (double) radius/2 * ONEGRAD,
 //                newRadius, Color.BLUE));
-        areas.add(new Area(lat + (double) newRadius*2 * ONEGRAD, lon + (double) newRadius*2 * ONEGRAD));
+        areas.add(new Area(lat + newRadius * ONEGRAD, lon + newRadius * ONEGRAD));
 
 //        circleList.add(createCircle(
 //                lat - (double) radius/2 * ONEGRAD,
 //                lon - (double) radius/2 * ONEGRAD,
 //                newRadius, Color.YELLOW));
-        areas.add(new Area(lat - (double) newRadius*2 * ONEGRAD, lon - (double) newRadius*2 * ONEGRAD));
+        areas.add(new Area(lat - newRadius * ONEGRAD, lon - newRadius * ONEGRAD));
 
 //        circleList.add(createCircle(
 //                lat - (double) radius/2 * ONEGRAD,
 //                lon + (double) radius/2 * ONEGRAD,
 //                newRadius, Color.CYAN));
-        areas.add(new Area(lat - (double) newRadius*2 * ONEGRAD, lon + (double) newRadius*2 * ONEGRAD));
+        areas.add(new Area(lat - newRadius * ONEGRAD, lon + newRadius * ONEGRAD));
 
 //        circleList.add(createCircle(
 //                lat,

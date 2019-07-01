@@ -17,12 +17,12 @@ public class MapItem implements ClusterItem {
     private Item item;
 
     public MapItem(Item item) {
-        mPosition = new LatLng(item.getLat(), item.getLong());
+        mPosition = new LatLng(item.getLat(), item.getLon());
         this.item = item;
     }
 
     public MapItem(Item item, String title, String snippet) {
-        mPosition = new LatLng(item.getLat(), item.getLong());
+        mPosition = new LatLng(item.getLat(), item.getLon());
         this.item = item;
         mTitle = title;
         mSnippet = snippet;

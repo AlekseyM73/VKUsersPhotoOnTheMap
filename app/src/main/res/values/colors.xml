@@ -2,10 +2,14 @@
 <resources>
     <color name="colorPrimary">#039BE5</color>
     <color name="colorPrimaryDark">#039BE5</color>
-    <color name="colorAccent">#D81B60</color>
+    <!--<color name="colorAccent">#D81B60</color>-->
+    <color name="colorAccent">#039BE5</color>
     <color name="colorTextPrimary">#2C2C2C</color>
+    <color name="colorTextPrimaryLight">#FFFFFF</color>
     <color name="colorTextSecondary">#7E7E7E</color>
+    <color name="colorTextSecondaryLight">#CACACA</color>
     <color name="colorInputBack">#F0F0F0</color>
     <color name="colorBtnBackground">#AE000000</color>
     <color name="c">#48598FE0</color>
+    <color name="colorBackTransparent">#79E6E6E6</color>
 </resources>

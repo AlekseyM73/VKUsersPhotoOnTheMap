@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alekseyM73.PhotoListener;
 import com.alekseyM73.R;
 import com.alekseyM73.model.photo.Item;
 import com.squareup.picasso.Picasso;
@@ -17,9 +18,11 @@ import java.util.LinkedList;
 public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private LinkedList<Item> items;
+    private PhotoListener listener;
 
-    public PhotosAdapter(LinkedList<Item> items) {
+    public PhotosAdapter(LinkedList<Item> items, PhotoListener listener) {
         this.items = items;
+        this.listener = listener;
     }
 
     public void addItems(LinkedList<Item> items){
@@ -59,6 +62,9 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         Holder(@NonNull View itemView) {
             super(itemView);
             photo = itemView.findViewById(R.id.photo);
+
+            photo.setOnClickListener(v ->
+                    listener.onClick(items.get(getAdapterPosition())));
         }
     }
 }
