@@ -349,37 +349,37 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //                lat,
 //                lon - (double) radius * ONEGRAD,
 //                newRadius, Color.RED));
-        areas.add(new Area(lat, lon - (double) radius * ONEGRAD));
+        areas.add(new Area(lat, lon - (double) newRadius*2 * ONEGRAD));
 
 //        circleList.add(createCircle(
 //                lat,
 //                lon + (double) radius * ONEGRAD,
 //                newRadius, Color.MAGENTA));
-        areas.add(new Area(lat, lon + (double) radius * ONEGRAD));
+        areas.add(new Area(lat, lon + (double) newRadius*2 * ONEGRAD));
 
 //        circleList.add(createCircle(
 //                lat + (double) radius/2 * ONEGRAD, //0.00003 подгон
 //                lon - (double) radius/2 * ONEGRAD,
 //                newRadius, Color.GREEN));
-        areas.add(new Area(lat + (double) radius/2 * ONEGRAD, lon - (double) radius/2 * ONEGRAD));
+        areas.add(new Area(lat + (double) newRadius*2 * ONEGRAD, lon - (double) newRadius*2 * ONEGRAD));
 
 //        circleList.add(createCircle(
 //                lat + (double) radius/2 * ONEGRAD,
 //                lon + (double) radius/2 * ONEGRAD,
 //                newRadius, Color.BLUE));
-        areas.add(new Area(lat + (double) radius/2 * ONEGRAD, lon + (double) radius/2 * ONEGRAD));
+        areas.add(new Area(lat + (double) newRadius*2 * ONEGRAD, lon + (double) newRadius*2 * ONEGRAD));
 
 //        circleList.add(createCircle(
 //                lat - (double) radius/2 * ONEGRAD,
 //                lon - (double) radius/2 * ONEGRAD,
 //                newRadius, Color.YELLOW));
-        areas.add(new Area(lat - (double) radius/2 * ONEGRAD, lon - (double) radius/2 * ONEGRAD));
+        areas.add(new Area(lat - (double) newRadius*2 * ONEGRAD, lon - (double) newRadius*2 * ONEGRAD));
 
 //        circleList.add(createCircle(
 //                lat - (double) radius/2 * ONEGRAD,
 //                lon + (double) radius/2 * ONEGRAD,
 //                newRadius, Color.CYAN));
-        areas.add(new Area(lat - (double) radius/2 * ONEGRAD, lon + (double) radius/2 * ONEGRAD));
+        areas.add(new Area(lat - (double) newRadius*2 * ONEGRAD, lon + (double) newRadius*2 * ONEGRAD));
 
 //        circleList.add(createCircle(
 //                lat,
