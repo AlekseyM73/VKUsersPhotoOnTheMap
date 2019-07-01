@@ -2,7 +2,10 @@ package com.alekseyM73.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -10,8 +13,6 @@ import android.widget.TextView;
 import com.alekseyM73.R;
 import com.alekseyM73.model.user.UserResponse;
 import com.squareup.picasso.Picasso;
-
-import java.util.GregorianCalendar;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -25,10 +26,12 @@ public class InfoActivity extends AppCompatActivity {
     private Button actionToAlbum;
     private ImageView photo;
     private CircleImageView userPhoto;
+    private Button actionToPage;
 
     public static final String USER = "com.alekseyM73.info.user";
     public static final String PHOTO_URL = "com.alekseyM73.info.photo";
     public static final String ALBUM_ID = "com.alekseyM73.info.album";
+
 
 
     @Override
@@ -42,17 +45,40 @@ public class InfoActivity extends AppCompatActivity {
             System.out.println("User = " + userResponse);
             photoUrl = arguments.getString(PHOTO_URL);
             albumId = arguments.getLong(ALBUM_ID);
+            Log.d("mylog", photoUrl + " " );
+
             setViews();
         }
+
+        actionToPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), PageActivity.class);
+                intent.putExtra("ID", userResponse.getId());
+                Log.d("mylog", userResponse.getId() + " ID");
+                startActivity(intent);
+            }
+        });
+
+        actionToAlbum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), PageActivity.class);
+                intent.putExtra("IDalbum", Math.abs(albumId));
+                Log.d("mylog", albumId + " IDalbum");
+                startActivity(intent);
+            }
+        });
     }
 
     private void setViews(){
         tvFullName = findViewById(R.id.full_name);
         bDate = findViewById(R.id.bday);
-        actionToAlbum = findViewById(R.id.butToLib);
+        actionToAlbum = findViewById(R.id.butToAlbum);
         photo = findViewById(R.id.iv_photo);
         userPhoto = findViewById(R.id.user_photo);
         tvCity = findViewById(R.id.city);
+        actionToPage = findViewById(R.id.butToPage);
 
         StringBuilder stringBuilder = new StringBuilder();
         if (userResponse.getFirstName() != null){
@@ -78,9 +104,6 @@ public class InfoActivity extends AppCompatActivity {
         Picasso.get().load(userResponse.getPhoto()).into(userPhoto);
         Picasso.get().load(photoUrl).into(photo);
 
-        actionToAlbum.setOnClickListener(v -> {
-
-        });
     }
 
 }
