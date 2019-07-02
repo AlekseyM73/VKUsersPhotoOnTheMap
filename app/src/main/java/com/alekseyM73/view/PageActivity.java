@@ -36,6 +36,7 @@ public class PageActivity extends AppCompatActivity {
                 }
             }else if(arguments.get("IDalbum") != null){
                 String idAlbum = arguments.getString("IDalbum");
+                Log.d("mylog", idAlbum + " Id Album");
                 webView.loadUrl(URLulbum + idAlbum);
             }
         }

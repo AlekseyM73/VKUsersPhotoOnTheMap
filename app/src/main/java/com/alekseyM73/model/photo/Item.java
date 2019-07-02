@@ -1,6 +1,7 @@
 package com.alekseyM73.model.photo;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.alekseyM73.model.user.UserResponse;
 import com.google.android.gms.maps.model.LatLng;
@@ -67,6 +68,7 @@ public class Item implements ClusterItem{
     }
 
     public String getAlbumId() {
+        Log.d("mylog", albumId + " вызов получения айдишника");
         return albumId;
     }
 

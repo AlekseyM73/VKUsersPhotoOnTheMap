@@ -64,8 +64,7 @@ public class InfoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), PageActivity.class);
-                intent.putExtra("IDalbum", albumId);
-                Log.d("mylog", albumId + " IDalbum");
+                intent.putExtra("IDalbum",userResponse.getId() + "_" + albumId);
                 startActivity(intent);
             }
         });
