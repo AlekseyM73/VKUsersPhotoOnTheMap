@@ -73,6 +73,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private Marker currentMarker;
     private View vGoToLocation;
+    private View vGoSearch;
     private ClusterManager<Item> mClusterManager;
 
     private FusedLocationProviderClient locationClient;
@@ -104,6 +105,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if (currentMarker != null) {
                 findLocation();
             }
+        });
+
+        vGoSearch = findViewById(R.id.search_click);
+        vGoSearch.setOnClickListener(v->{
+            search();
         });
 
         View bottomS = findViewById(R.id.bottom_sheet);
