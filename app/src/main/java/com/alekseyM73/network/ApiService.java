@@ -26,7 +26,7 @@ public class ApiService {
                     .readTimeout(15, TimeUnit.SECONDS)
 
                     .connectTimeout(15, TimeUnit.SECONDS)
-                    .addInterceptor(logging)
+//                    .addInterceptor(logging)
 
                     .build();
 

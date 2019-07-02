@@ -68,7 +68,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private final int REQUEST_LOCATION = 100;
 
     private GoogleMap mMap;
-    private Marker currentMarker;
+//    private Marker currentMarker;
     private View vGoToLocation;
     private View vGoSearch;
     private View vGoToGallery;
@@ -100,9 +100,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         vGoToLocation = findViewById(R.id.to_location);
 
         vGoToLocation.setOnClickListener(v -> {
-            if (currentMarker != null) {
+//            if (currentMarker != null) {
                 findLocation();
-            }
+//            }
         });
 
         vGoSearch = findViewById(R.id.search_click);
@@ -386,10 +386,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void search(){
+        LatLng latLng = mMap.getCameraPosition().target;
+        mapVM.setLocation(latLng.latitude, latLng.longitude);
         SearchFilter searchFilter = getFilterValue();
         mapVM.searchPhotos(this, searchFilter);
     }
-
 
     private Circle createCircle(double lat, double lon, double radius, int color){
         return mMap.addCircle(new CircleOptions()
@@ -403,17 +404,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void showMyLocation(double lat, double lon) {
         LatLng latLng = new LatLng(lat, lon);
         mapVM.setLocation(lat, lon);
-        if (currentMarker == null) {
+//        if (currentMarker == null) {
             // Add Marker to Map
-            MarkerOptions option = new MarkerOptions();
+//            MarkerOptions option = new MarkerOptions();
             // option.title("My Location");
-            option.snippet("....");
-            option.position(latLng);
-            currentMarker = mMap.addMarker(option);
-            currentMarker.setDraggable(true);
-        } else {
-            currentMarker.setPosition(latLng);
-        }
+//            option.snippet("....");
+//            option.position(latLng);
+//            currentMarker = mMap.addMarker(option);
+//            currentMarker.setDraggable(true);
+//        } else {
+//            currentMarker.setPosition(latLng);
+//        }
         moveToLocation(latLng);
     }
 

@@ -16,6 +16,7 @@
         android:layout_marginBottom="72dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         />
 
     <androidx.cardview.widget.CardView
@@ -73,6 +74,17 @@
             />
 
     </androidx.cardview.widget.CardView>
+
+    <View
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="@drawable/ic_marker"
+        android:backgroundTint="@android:color/holo_red_dark"
+        app:layout_constraintTop_toTopOf="@id/map"
+        app:layout_constraintBottom_toBottomOf="@id/map"
+        app:layout_constraintStart_toStartOf="@id/map"
+        app:layout_constraintEnd_toEndOf="@id/map"
+        />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"

@@ -157,7 +157,6 @@ public class MapVM extends AndroidViewModel {
             UserResponse user = usersMap.get(item.getOwnerId());
             if (user != null){
                 if (check(user)){
-//                    System.out.println("-------- Add: " + user.toString());
                     item.setUser(user);
                     items.add(item);
                 }
