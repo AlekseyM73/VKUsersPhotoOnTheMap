@@ -74,7 +74,7 @@ public class PhotosActivity extends AppCompatActivity implements PhotoListener {
         Intent intent = new Intent(PhotosActivity.this, InfoActivity.class);
         intent.putExtra(InfoActivity.USER, item.getUser());
         intent.putExtra(InfoActivity.PHOTO_URL, item.getPhotos().get(item.getPhotos().size()-1).getUrl());
-        intent.putExtra(InfoActivity.ALBUM_ID, item.getAlbumId());
+        intent.putExtra(InfoActivity.PHOTO_ID, item.getId());
         startActivity(intent);
     }
 }

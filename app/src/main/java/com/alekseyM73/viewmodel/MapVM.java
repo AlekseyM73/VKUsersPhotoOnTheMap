@@ -113,7 +113,7 @@ public class MapVM extends AndroidViewModel {
 //        options.put("end_time", String.valueOf(date.getTime() / 1000));
         options.put("start_time", "1561334400");
         options.put("radius", searchFilter.getRadius());
-        options.put("count", "140");
+        options.put("count", "200");
         options.put("sort", "0");
         options.put("v", "5.95");
         options.put("access_token", accessToken);
@@ -151,7 +151,10 @@ public class MapVM extends AndroidViewModel {
     private void getUsersInfo(){
         StringBuilder stringBuilder = new StringBuilder();
         for (Item item: allPhotos){
-            stringBuilder.append(item.getOwnerId()).append(",");
+            long id = item.getOwnerId();
+            if (id > 0) {
+                stringBuilder.append(item.getOwnerId()).append(",");
+            }
         }
         apiRepository.getUsers(stringBuilder.toString(), accessToken)
                 .subscribe(map ->{

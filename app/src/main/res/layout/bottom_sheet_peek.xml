@@ -46,7 +46,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="0dp"
                 android:layout_marginBottom="8dp"
-                android:paddingEnd="24dp"
+                android:paddingEnd="8dp"
                 android:paddingStart="4dp"
                 android:background="@drawable/search_tv"
                 android:textSize="16sp"
@@ -63,40 +63,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 />
 
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="invisible"
-                android:layout_marginTop="0dp"
-                android:layout_marginEnd="4dp"
-                style="?android:attr/progressBarStyleSmall"
-                app:layout_constraintEnd_toEndOf="@id/input_search"
-                app:layout_constraintBottom_toBottomOf="@id/input_search"
-                app:layout_constraintTop_toTopOf="@id/input_search"
-                />
-
-            <!--<androidx.cardview.widget.CardView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="46dp"-->
-                <!--android:layout_marginStart="16dp"-->
-                <!--android:layout_marginEnd="16dp"-->
+            <!--<ProgressBar-->
+                <!--android:id="@+id/progress_bar"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:visibility="invisible"-->
                 <!--android:layout_marginTop="0dp"-->
-                <!--android:layout_marginBottom="8dp"-->
-                <!--app:cardBackgroundColor="@color/colorInputBack"-->
-                <!--app:cardCornerRadius="6dp"-->
-                <!--app:cardElevation="0dp"-->
-                <!--&gt;-->
-
-                <!--<fragment android:id="@+id/autocomplete_fragment"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"-->
-                    <!--app:layout_constraintTop_toTopOf="parent"-->
-                    <!--app:layout_constraintStart_toStartOf="parent"-->
-                    <!--/>-->
-
-            <!--</androidx.cardview.widget.CardView>-->
+                <!--android:layout_marginEnd="4dp"-->
+                <!--style="?android:attr/progressBarStyleSmall"-->
+                <!--app:layout_constraintEnd_toEndOf="@id/input_search"-->
+                <!--app:layout_constraintBottom_toBottomOf="@id/input_search"-->
+                <!--app:layout_constraintTop_toTopOf="@id/input_search"-->
+                <!--/>-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

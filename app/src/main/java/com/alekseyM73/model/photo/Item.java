@@ -68,7 +68,6 @@ public class Item implements ClusterItem{
     }
 
     public String getAlbumId() {
-        Log.d("mylog", albumId + " вызов получения айдишника");
         return albumId;
     }
 
@@ -81,7 +80,7 @@ public class Item implements ClusterItem{
     }
 
     public void setOwnerId(Long ownerId) {
-        this.ownerId = Math.abs(ownerId);
+        this.ownerId = ownerId;
     }
 
     public String getText() {

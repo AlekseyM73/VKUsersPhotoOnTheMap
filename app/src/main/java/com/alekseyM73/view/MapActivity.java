@@ -129,7 +129,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         radiusRangeBar.setSeekPinByIndex(1);
 
         vSearch = bottomS.findViewById(R.id.input_search);
-        progressBar = bottomS.findViewById(R.id.progress_bar);
+        progressBar = findViewById(R.id.progress_bar);
 
         vSearch.setOnClickListener( listener -> {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -253,7 +253,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Intent intent = new Intent(MapActivity.this, InfoActivity.class);
             intent.putExtra(InfoActivity.USER, item.getUser());
             intent.putExtra(InfoActivity.PHOTO_URL, item.getPhotos().get(item.getPhotos().size()-1).getUrl());
-            intent.putExtra(InfoActivity.ALBUM_ID, item.getAlbumId());
+            intent.putExtra(InfoActivity.PHOTO_ID, item.getId());
+            intent.putExtra(InfoActivity.PHOTO_ID, item.getId());
             startActivity(intent);
             return false;
         });

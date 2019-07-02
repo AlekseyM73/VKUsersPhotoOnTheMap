@@ -24,9 +24,7 @@
         <item>300</item>
         <item>2400</item>
         <item>15000</item>
-        <item>18000</item>
-        <item>150000</item>
-    </string-array>
+   </string-array>
 
     <string-array name="sex_list">
         <item>Любой</item>

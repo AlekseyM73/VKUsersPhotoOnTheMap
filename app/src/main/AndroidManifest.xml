@@ -18,15 +18,19 @@
 
         <activity android:name=".view.SplashScreenActivity"
             android:theme="@style/SplashScreenTheme">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
-        <activity android:name=".view.PageActivity"></activity>
-        <activity android:name=".view.InfoActivity"
+        <activity android:name=".view.PageActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity android:name=".view.InfoActivity"
+            android:theme="@style/AppTheme.NoActionBarTranslucent"/>
 
         <uses-library
             android:name="org.apache.http.legacy"
@@ -41,14 +45,15 @@
 
         <activity
             android:name=".view.MapActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBarTranslucent" />
 
         <activity
             android:name="com.vk.sdk.VKServiceActivity"
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
 
-        <activity android:name=".view.PhotosActivity" android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".view.PhotosActivity"
+            android:theme="@style/AppTheme.NoActionBarTranslucent"/>
     </application>
 
 </manifest>

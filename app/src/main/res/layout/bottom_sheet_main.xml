@@ -59,7 +59,7 @@
         app:mrb_barWeight="1dp"
         app:mrb_connectingLineWeight="2dp"
         app:mrb_tickStart="0"
-        app:mrb_tickEnd="5"
+        app:mrb_tickEnd="3"
         app:mrb_rangeBarPaddingBottom="8dp"
         app:mrb_selectorColor="@color/colorAccent"
         app:mrb_pinMaxFont="14sp"

@@ -8,13 +8,24 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="AppTheme.NoActionBarTranslucent" parent="AppTheme.NoActionBar">
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
     <style name="SplashScreenTheme" parent = "Theme.AppCompat.NoActionBar">
-    <item name="android:windowBackground">@drawable/splashscreen</item>
-</style>
+        <item name="android:windowBackground">@drawable/splashscreen</item>
+    </style>
+
+    <style name="MapCardView" parent="CardView">
+        <item name="cardElevation">0dp</item>
+        <item name="cardBackgroundColor">@android:color/white</item>
+        <item name="android:alpha">0.9</item>
+        <item name="contentPadding">8dp</item>
+        <item name="cardCornerRadius">2dp</item>
+    </style>
 </resources>
