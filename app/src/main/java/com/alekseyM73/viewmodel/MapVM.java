@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.reactivex.Single;
+
 public class MapVM extends AndroidViewModel {
 
     private ApiRepository apiRepository = new ApiRepository();
@@ -103,6 +105,14 @@ public class MapVM extends AndroidViewModel {
         if (accessToken == null){
             accessToken = new Preferences().getToken(context);
         }
+
+
+//      Лучше такие сложные и длинные ифы переносить вот так
+//        if (prevLat == lat
+//            && prevLon == lon
+//            && this.searchFilter.getRadius().equals(searchFilter.getRadius())){
+//      Хотя... красивее он не стал :D
+
         if (prevLat == lat && prevLon == lon && this.searchFilter.getRadius().equals(searchFilter.getRadius())){
             this.searchFilter = searchFilter;
             prepare();
@@ -118,6 +128,31 @@ public class MapVM extends AndroidViewModel {
         options.put("v", "5.95");
         options.put("access_token", accessToken);
 
+
+//        По хорошему все можно было переписать на rx и вынести это
+        /*apiRepository.search(areas,options)
+                .flatMapIterable(photosResponses -> photosResponses)
+                .flatMapIterable(photosResponse -> photosResponse.getResponse().getItems())
+                .toList()
+                .flatMap(items -> {
+                    if (items.size() == 0){
+                        showMessage("Упс! Здесь ничего нет"); // в таком исполенении - этого тут
+                                                              //не должно быть и след. строки тоже
+                        usersMap = new HashMap<>();
+                        prepare();
+                        return Single.error( new Exception());
+                    } else {
+                        getUsersInfo();
+                    }
+                })*/
+//        и уже в subscribe и в error, а так у вас получается что rx - чисто для транспорта :C
+
+
+
+
+
+
+
         apiRepository.search(areas, options)
                 .subscribe(photosResponseList -> {
                     if (photosResponseList != null){
@@ -129,8 +164,14 @@ public class MapVM extends AndroidViewModel {
                         for (PhotosResponse response: photosResponseList){
                             allPhotos.addAll(response.getResponse().getItems());
                         }
+//                        WTF ? у нас вроде не Java приложение, для логов используется Log.
                         System.out.println("------ SIZE = " + allPhotos.size());
                         if (allPhotos.size() == 0){
+//                            Ая яй, а строки не интернацианализированны, на самом первом же созвоне
+//                            говорили о том что в будущем будем переводить на английский
+//                            Ситуация: Вы сдаете проект заказчику, все ок. Потом он решает добавить
+//                            другие языки, а тут шляпа. Не надо так.
+
                             showMessage("Упс! Здесь ничего нет");
                             usersMap = new HashMap<>();
                             prepare();

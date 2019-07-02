@@ -96,6 +96,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         locationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
+
+    //Мои  глаза, слишком больно T_T
     private void setViews(){
         vGoToLocation = findViewById(R.id.to_location);
 

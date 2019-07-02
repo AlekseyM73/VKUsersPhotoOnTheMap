@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.alekseyM73.model.user.UserResponse;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.maps.android.clustering.ClusterItem;
@@ -163,6 +164,10 @@ public class Item implements ClusterItem{
 
     @Override
     public String toString() {
+
+//        У вас в зависимостях у ретрофита стоит сериалайзер/десериалайзер GSON,
+//        зачем мучатся и создавать самим если можно заставить его ?
+//        new Gson().toJson(this);
         return "Item{" +
                 "id=" + id +
                 ", albumId=" + albumId +

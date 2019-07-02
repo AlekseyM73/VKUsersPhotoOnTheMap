@@ -7,6 +7,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterItem;
 
+//Неиспользуемый класс ?
 public class MapItem implements ClusterItem {
 
     private transient LatLng mPosition;

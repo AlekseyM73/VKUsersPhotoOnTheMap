@@ -15,6 +15,10 @@ public class Application extends android.app.Application{
 
     public static HashSet<Item> photosToGallery = new HashSet<>();
 
+
+
+    // Не уверен что это должно здесь быть
+    // В Application обычно происходят всякие инициализации DI и DB
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
         public void onVKAccessTokenChanged(VKAccessToken oldToken, VKAccessToken newToken) {

@@ -16,6 +16,8 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+
+//Опять странный нейминг, по сути репозиторием не является (не хранит не чего), ApiMiddleware ?
 public class ApiRepository {
 
     private VkApi service;

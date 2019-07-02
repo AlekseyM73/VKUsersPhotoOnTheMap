@@ -35,7 +35,7 @@ public class PhotosVM extends AndroidViewModel {
         this.photos = photos;
         photosForShow.setValue(photos);
     }
-
+//  Ее ни кто не юзает и не стирает, она плачет
     public void loadMore(){
         if (photos == null || photosForShow.getValue() == null) return;
         int next = photoCount + 10;

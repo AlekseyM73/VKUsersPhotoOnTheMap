@@ -36,6 +36,9 @@ public class PhotosActivity extends AppCompatActivity implements PhotoListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photos);
 
+        //Лучше так много кода в onCreate не оставлять,
+        //а разносить по функциям, ибо сложно и долго читать
+
         recyclerView = findViewById(R.id.rv_photos);
         adapter = new PhotosAdapter(new LinkedList<>(), this::onClick);
         recyclerView.setAdapter(adapter);
@@ -53,6 +56,9 @@ public class PhotosActivity extends AppCompatActivity implements PhotoListener {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         });
 
+
+        //Почему бы не вынести gson из if и не писать его 2 раза
+        //тоже самое с listType и photosVM.setPhotos(mapItems)
         if (getIntent().getExtras() != null){
             String json = getIntent().getStringExtra(KEY_PHOTOS);
             Gson gson = new Gson();

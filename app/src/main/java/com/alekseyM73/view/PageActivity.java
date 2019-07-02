@@ -26,6 +26,9 @@ public class PageActivity extends AppCompatActivity {
             webView.setWebViewClient(new WebViewClient());
             webView.getSettings().setJavaScriptEnabled(true);
             //Скорее всего не нужная проверка, проверил 30 страниц, все с стандартным id
+
+            //Раз уж вы решили предерживаться паттерна MVVM - выносите логику с UI слоя,
+            // зочьем она вам тут, это вьюха и тут логики никакой не должно быть
             if(arguments.get("ID") != null){
                 try {
                     Long idPage = arguments.getLong("ID");

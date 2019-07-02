@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 
 public class Preferences {
 
+    //Про константы писал
     private final String KEY_PREFERENCES = "com.alekseyM73.settings";
     private final String KEY_PREFERENCES_TOKEN = "com.cathy.token";
 

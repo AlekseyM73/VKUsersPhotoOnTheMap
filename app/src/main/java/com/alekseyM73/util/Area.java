@@ -5,6 +5,7 @@ public class Area {
     private double lat;
     private double lon;
 
+    //пустой
     public Area() {
     }
 

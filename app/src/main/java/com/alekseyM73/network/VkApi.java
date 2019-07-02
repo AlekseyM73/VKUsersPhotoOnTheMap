@@ -15,6 +15,9 @@ import retrofit2.http.Url;
 
 public interface VkApi {
 
+
+    //Правило хорошего тона - не оставлять старый код, его если что - всегда можно из гита вынуть
+
     // sort: 0 - по дате добавления, 1 - по кол-ву Нравится
     // radius в метрах, по умолчанию 5000
 //    @POST("photos.searchPhotos?")
@@ -29,6 +32,8 @@ public interface VkApi {
 //            @Query("count") int count,
 //            @Query("radius") int radius);
 
+
+    //Выход за границу, уже писал об этом
     @GET("photos.search?")
     Observable<PhotosResponse> getPhotos(@Query("lat") double lat, @Query("long") double lon, @QueryMap Map<String, String> options);
 

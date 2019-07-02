@@ -22,6 +22,9 @@ public class PlaceAutoCompleteAdapter extends ArrayAdapter<Prediction> {
         super(context, resource, objects);
     }
 
+
+
+    //А все эти три метода обязательно оверрайдить если они только вызывают супер ?
     @Nullable
     @Override
     public Prediction getItem(int position) {
