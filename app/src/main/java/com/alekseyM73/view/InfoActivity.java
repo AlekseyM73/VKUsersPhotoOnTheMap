@@ -20,7 +20,7 @@ public class InfoActivity extends AppCompatActivity {
 
     private UserResponse userResponse;
     private String photoUrl;
-    private Long albumId;
+    private String albumId;
 
     private TextView tvFullName, bDate, tvCity;
     private Button actionToAlbum;
@@ -44,7 +44,7 @@ public class InfoActivity extends AppCompatActivity {
             userResponse = (UserResponse) arguments.getSerializable(USER);
             System.out.println("User = " + userResponse);
             photoUrl = arguments.getString(PHOTO_URL);
-            albumId = arguments.getLong(ALBUM_ID);
+            albumId = arguments.getString(ALBUM_ID);
             Log.d("mylog", photoUrl + " " );
 
             setViews();
@@ -64,7 +64,7 @@ public class InfoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), PageActivity.class);
-                intent.putExtra("IDalbum", Math.abs(albumId));
+                intent.putExtra("IDalbum", albumId);
                 Log.d("mylog", albumId + " IDalbum");
                 startActivity(intent);
             }

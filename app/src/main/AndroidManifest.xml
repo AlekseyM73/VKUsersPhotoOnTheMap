@@ -25,7 +25,6 @@
         </activity>
 
         <activity android:name=".view.PageActivity"></activity>
-        <activity android:name=".view.LibPhotoActivity" />
         <activity android:name=".view.InfoActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 

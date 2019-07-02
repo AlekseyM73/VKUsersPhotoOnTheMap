@@ -24,7 +24,7 @@ public class PageActivity extends AppCompatActivity {
         Bundle arguments = getIntent().getExtras();
         if (arguments != null) {
             webView.setWebViewClient(new WebViewClient());
-
+            webView.getSettings().setJavaScriptEnabled(true);
             //Скорее всего не нужная проверка, проверил 30 страниц, все с стандартным id
             if(arguments.get("ID") != null){
                 try {
@@ -35,7 +35,7 @@ public class PageActivity extends AppCompatActivity {
                     webView.loadUrl(URL.substring(0, URL.length()-3) + idPage);
                 }
             }else if(arguments.get("IDalbum") != null){
-                Long idAlbum = arguments.getLong("IDalbum");
+                String idAlbum = arguments.getString("IDalbum");
                 webView.loadUrl(URLulbum + idAlbum);
             }
         }
