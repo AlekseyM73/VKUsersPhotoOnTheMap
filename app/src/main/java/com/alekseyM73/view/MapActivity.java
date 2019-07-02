@@ -26,6 +26,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.alekseyM73.R;
@@ -61,6 +63,7 @@ import com.google.gson.Gson;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -72,8 +75,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private Marker currentMarker;
+    private HashSet<Item> photosToGallery = new HashSet<>();
     private View vGoToLocation;
     private View vGoSearch;
+    private View vGoToGallery;
     private ClusterManager<Item> mClusterManager;
 
     private FusedLocationProviderClient locationClient;
@@ -111,6 +116,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         vGoSearch.setOnClickListener(v->{
             search();
         });
+
+        vGoToGallery = findViewById(R.id.to_gallery_click);
+
+        vGoToGallery.setOnClickListener(view -> {
+            if (!photosToGallery.isEmpty()){
+                Gson gson = new Gson();
+                String json = gson.toJson(photosToGallery);
+                startActivity(
+                        new Intent(MapActivity.this, PhotosActivity.class)
+                                .putExtra(PhotosActivity.KEY_PHOTOS, json));
+            }
+        });
+
 
         View bottomS = findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomS);
@@ -150,6 +168,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapVM = ViewModelProviders.of(this).get(MapVM.class);
 
         mapVM.getPhotos().observe(this, items -> {
+            addItemsToGallery(items);
             addItems(items);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         });
@@ -254,6 +273,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.setOnMarkerDragListener(this);
 
         setViews();
+    }
+    private void addItemsToGallery (Set<Item> items){
+        for (Item item : items) {
+            if (item.getLat() == null || item.getLon() == null){
+                continue;
+            }
+            GlideApp.with(this)
+                    .asBitmap()
+                    .load(item.getPhotos().get(0).getUrl())
+                    .into(new CustomTarget<Bitmap>(){
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            item.setBitmap(resource);
+                            photosToGallery.add(item);
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                        }
+    });
+        }
     }
 
     private void addItems(Set<Item> items) {
