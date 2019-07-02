@@ -24,7 +24,7 @@ public class PageActivity extends AppCompatActivity {
         Bundle arguments = getIntent().getExtras();
         if (arguments != null) {
             webView.setWebViewClient(new WebViewClient());
-
+            webView.getSettings().setJavaScriptEnabled(true);
             //Скорее всего не нужная проверка, проверил 30 страниц, все с стандартным id
             if(arguments.get("ID") != null){
                 try {
