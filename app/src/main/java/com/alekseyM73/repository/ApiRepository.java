@@ -3,6 +3,7 @@ package com.alekseyM73.repository;
 import com.alekseyM73.model.photo.PhotosResponse;
 import com.alekseyM73.model.place.PlaceDetailsResponse;
 import com.alekseyM73.model.search.PlaceSearchResponse;
+import com.alekseyM73.model.user.UserResponse;
 import com.alekseyM73.network.ApiService;
 import com.alekseyM73.network.VkApi;
 import com.alekseyM73.util.Area;
@@ -30,13 +31,26 @@ public class ApiRepository {
     }
 
     public Observable<List<PhotosResponse>> search(List<Area> list, Map<String, String> options){
-        return Observable.fromIterable(list)
+        return Observable
+                .fromIterable(list)
                 .concatMap(item ->
-                        Observable.interval(300, TimeUnit.MICROSECONDS)
+                        Observable
+                                .interval(300, TimeUnit.MICROSECONDS)
                                 .subscribeOn(Schedulers.io())
                                 .take(1)
                                 .flatMap(second -> service.getPhotos(item.getLat(), item.getLon(), options)))
                 .toList().toObservable()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Map<Long, UserResponse>> getUsers(String ids, String token){
+        return service.getUserInfo(ids, token)
+                .flatMap(userInfoResponse ->
+                        Observable
+                                .fromIterable(userInfoResponse.getResponse())
+                                .toMap(UserResponse::getId).toObservable()
+                )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

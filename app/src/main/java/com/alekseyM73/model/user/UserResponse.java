@@ -31,6 +31,10 @@ public class UserResponse implements Serializable {
     @Expose
     private UserCity city;
 
+    @SerializedName("photo_100")
+    @Expose
+    private String photo;
+
     public Long getId() {
         return id;
     }
@@ -77,5 +81,23 @@ public class UserResponse implements Serializable {
 
     public void setCity(UserCity city) {
         this.city = city;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    @Override
+    public String toString() {
+        return "UserResponse{" +
+                "id=" + id +
+                ", sex=" + sex +
+                ", bdate='" + bdate + '\'' +
+                ", photo='" + photo + '\'' +
+                '}';
     }
 }

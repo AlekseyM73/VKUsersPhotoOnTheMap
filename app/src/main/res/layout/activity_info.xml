@@ -5,63 +5,74 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.InfoActivity">
+    tools:context=".view.InfoActivity"
+    android:background="@android:color/black"
+    android:fitsSystemWindows="true"
+    >
 
-    <LinearLayout
-        android:layout_width="395dp"
-        android:layout_height="715dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/user_photo"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="16dp"
+        app:civ_border_width="2dp"
+        app:civ_border_color="#FF000000"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
-        <ImageView
-            android:id="@+id/iv_photo"
-            android:layout_width="match_parent"
-            android:layout_height="490dp"
-            tools:srcCompat="@tools:sample/avatars"
-            />
+    <ImageView
+        android:id="@+id/iv_photo"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/user_photo"
+        app:layout_constraintBottom_toTopOf="@id/butToLib"
+        />
 
-        <TextView
-            android:id="@+id/full_name"
-            android:layout_width="match_parent"
-            android:layout_height="37dp"
-            android:gravity="center"
-            android:text="ФИ"
-            android:textSize="18sp" />
+    <TextView
+        android:id="@+id/full_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/colorTextPrimaryLight"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@id/user_photo"
+        app:layout_constraintTop_toTopOf="@id/user_photo"
+        />
 
-        <TextView
-            android:id="@+id/bday"
-            android:layout_width="match_parent"
-            android:layout_height="43dp"
-            android:gravity="center"
-            android:text="Age"
-            android:textSize="18sp" />
+    <TextView
+        android:id="@+id/city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorTextSecondaryLight"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/full_name"
+        app:layout_constraintStart_toStartOf="@id/full_name"
+        />
 
-        <TextView
-            android:id="@+id/sex"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:gravity="center"
-            android:text="sex"
-            android:textSize="18sp" />
+    <TextView
+        android:id="@+id/bday"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorTextSecondaryLight"
+        android:textSize="16sp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintTop_toBottomOf="@id/full_name"
+        app:layout_constraintStart_toEndOf="@id/city"
+        />
 
-        <Button
-            android:id="@+id/butToLib"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="MoveToLib" />
-
-        <Button
-            android:id="@+id/butToPage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="MoveToPage" />
-    </LinearLayout>
+    <Button
+        android:id="@+id/butToLib"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Перейти к альбому"
+        android:textColor="@android:color/white"
+        android:background="@android:color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

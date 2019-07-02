@@ -26,7 +26,8 @@
 
         <activity android:name=".view.PageActivity"></activity>
         <activity android:name=".view.LibPhotoActivity" />
-        <activity android:name=".view.InfoActivity" />
+        <activity android:name=".view.InfoActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <uses-library
             android:name="org.apache.http.legacy"
@@ -48,7 +49,7 @@
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
 
-        <activity android:name=".view.PhotosActivity"/>
+        <activity android:name=".view.PhotosActivity" android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

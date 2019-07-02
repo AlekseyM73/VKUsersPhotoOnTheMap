@@ -9,7 +9,6 @@ public class SearchFilter {
     private String ageStart;
     private String ageFinish;
 
-
     public int getSex() {
         return sex;
     }
@@ -56,5 +55,15 @@ public class SearchFilter {
 
     public String getAgeFinish() {
         return ageFinish;
+    }
+
+    @Override
+    public String toString() {
+        return "SearchFilter{" +
+                "sex=" + sex +
+                ", radius='" + radius + '\'' +
+                ", ageStart='" + ageStart + '\'' +
+                ", ageFinish='" + ageFinish + '\'' +
+                '}';
     }
 }

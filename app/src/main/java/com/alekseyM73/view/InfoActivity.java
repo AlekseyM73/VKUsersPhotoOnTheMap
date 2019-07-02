@@ -2,30 +2,33 @@ package com.alekseyM73.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alekseyM73.R;
-import com.alekseyM73.model.photo.Item;
-import com.alekseyM73.model.photo.Photo;
 import com.alekseyM73.model.user.UserResponse;
 import com.squareup.picasso.Picasso;
+
+import java.util.GregorianCalendar;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class InfoActivity extends AppCompatActivity {
 
     private UserResponse userResponse;
-    private Photo photo;
-    private Item item;
-    private TextView firsec;
-    private TextView bDate;
-    private TextView sex;
-    private Button butToLib;
-    private Button butToPage;
-    private ImageView imageView;
+    private String photoUrl;
+    private Long albumId;
+
+    private TextView tvFullName, bDate, tvCity;
+    private Button actionToAlbum;
+    private ImageView photo;
+    private CircleImageView userPhoto;
+
+    public static final String USER = "com.alekseyM73.info.user";
+    public static final String PHOTO_URL = "com.alekseyM73.info.photo";
+    public static final String ALBUM_ID = "com.alekseyM73.info.album";
 
 
     @Override
@@ -35,51 +38,49 @@ public class InfoActivity extends AppCompatActivity {
 
         Bundle arguments = getIntent().getExtras();
         if (arguments != null) {
-            getEssences(arguments);
+            userResponse = (UserResponse) arguments.getSerializable(USER);
+            System.out.println("User = " + userResponse);
+            photoUrl = arguments.getString(PHOTO_URL);
+            albumId = arguments.getLong(ALBUM_ID);
+            setViews();
         }
-        setInf();
-
-        butToLib.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), LibPhotoActivity.class);
-                intent.putExtra("AlbubID", item.getAlbumId());
-                startActivity(intent);
-            }
-        });
-
-        butToPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), PageActivity.class);
-                intent.putExtra("AccID", item.getUserId());
-                startActivity(intent);
-            }
-        });
-
     }
 
-    private void getEssences(Bundle arguments){
-       userResponse = (UserResponse)arguments.getSerializable(UserResponse.class.getSimpleName());
-       photo = (Photo)arguments.getSerializable(Photo.class.getSimpleName());
-       item = (Item)arguments.getSerializable(Item.class.getSimpleName());
-    }
-
-    //TODO: Разобраться с полом человека
-    // и вставить в поле "sex".
-
-    private void setInf(){
-        firsec = findViewById(R.id.full_name);
+    private void setViews(){
+        tvFullName = findViewById(R.id.full_name);
         bDate = findViewById(R.id.bday);
-        sex = findViewById(R.id.sex);
-        butToLib = findViewById(R.id.butToLib);
-        butToPage = findViewById(R.id.butToPage);
-        imageView = findViewById(R.id.iv_photo);
+        actionToAlbum = findViewById(R.id.butToLib);
+        photo = findViewById(R.id.iv_photo);
+        userPhoto = findViewById(R.id.user_photo);
+        tvCity = findViewById(R.id.city);
 
+        StringBuilder stringBuilder = new StringBuilder();
+        if (userResponse.getFirstName() != null){
+            stringBuilder.append(userResponse.getFirstName());
+        }
+        if (userResponse.getLastName() != null){
+            stringBuilder.append(" ").append(userResponse.getLastName());
+        }
+        tvFullName.setText(stringBuilder.toString());
 
-        firsec.setText(userResponse.getFirstName() + " " + userResponse.getLastName());
-        bDate.setText(userResponse.getBdate());
-        Picasso.get().load(photo.getUrl()).into(imageView);
+        if (userResponse.getCity() != null){
+            tvCity.setText(userResponse.getCity().getTitle());
+        }
+
+//        if (userResponse.getBdate() != null) {
+//            String[] bdate = userResponse.getBdate().split("\\.");
+//            if (bdate.length == 3) {
+//                int age = GregorianCalendar.getInstance().get(GregorianCalendar.YEAR) - Integer.valueOf(bdate[2]);
+//                bDate.setText(String.valueOf(age));
+//            }
+//        }
+
+        Picasso.get().load(userResponse.getPhoto()).into(userPhoto);
+        Picasso.get().load(photoUrl).into(photo);
+
+        actionToAlbum.setOnClickListener(v -> {
+
+        });
     }
 
 }

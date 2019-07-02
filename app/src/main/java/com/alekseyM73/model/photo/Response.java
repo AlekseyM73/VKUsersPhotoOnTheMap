@@ -1,5 +1,6 @@
 package com.alekseyM73.model.photo;
 
+import com.alekseyM73.model.user.UserResponse;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

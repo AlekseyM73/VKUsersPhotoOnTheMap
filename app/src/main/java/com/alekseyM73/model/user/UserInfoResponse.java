@@ -10,13 +10,13 @@ public class UserInfoResponse {
 
     @SerializedName("response")
     @Expose
-    private List<Response> response = null;
+    private List<UserResponse> response = null;
 
-    public List<Response> getResponse() {
+    public List<UserResponse> getResponse() {
         return response;
     }
 
-    public void setResponse(List<Response> response) {
+    public void setResponse(List<UserResponse> response) {
         this.response = response;
     }
 }

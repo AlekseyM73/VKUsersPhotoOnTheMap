@@ -16,6 +16,7 @@ import com.alekseyM73.model.photo.Item;
 import com.alekseyM73.model.photo.PhotosResponse;
 import com.alekseyM73.model.place.PlaceLocation;
 import com.alekseyM73.model.search.Prediction;
+import com.alekseyM73.model.user.UserResponse;
 import com.alekseyM73.repository.ApiRepository;
 import com.alekseyM73.util.Area;
 import com.alekseyM73.util.Preferences;
@@ -23,7 +24,9 @@ import com.alekseyM73.util.SearchFilter;
 import com.google.android.gms.maps.model.Circle;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -35,12 +38,19 @@ public class MapVM extends AndroidViewModel {
 
     private ApiRepository apiRepository = new ApiRepository();
     private String accessToken = null;
-    private MutableLiveData<Set<Item>> photos = new MutableLiveData<>();
+    private MutableLiveData<Set<Item>> photosForShow = new MutableLiveData<>();
+    private Set<Item> allPhotos = new HashSet<>();
+    private Map<Long, UserResponse> usersMap = new HashMap<>();
+
     private MutableLiveData<Integer> progress = new MutableLiveData<>();
     private MutableLiveData<String> message = new MutableLiveData<>();
+
     private MutableLiveData<List<Prediction>> predictions = new MutableLiveData<>();
     private MutableLiveData<PlaceLocation> location = new MutableLiveData<>();
-    private double lat, lon;
+
+    private SearchFilter searchFilter;
+
+    private double lat, prevLat = 0, lon, prevLon = 0;
     private List<Circle> circles = new ArrayList<>();
 
     public MapVM(@NonNull Application application) {
@@ -48,7 +58,7 @@ public class MapVM extends AndroidViewModel {
     }
 
     public LiveData<Set<Item>> getPhotos(){
-        return photos;
+        return photosForShow;
     }
 
     public LiveData<Integer> getProgress() {
@@ -89,51 +99,119 @@ public class MapVM extends AndroidViewModel {
 
     @SuppressLint("CheckResult")
     public void searchPhotos(Context context, SearchFilter searchFilter, List<Area> areas){
+        progress.setValue(View.VISIBLE);
         if (accessToken == null){
             accessToken = new Preferences().getToken(context);
+        }
+        if (prevLat == lat && prevLon == lon && this.searchFilter.getRadius().equals(searchFilter.getRadius())){
+            this.searchFilter = searchFilter;
+            prepare();
+            return;
         }
         Date date = new Date();
         Map<String, String> options = new HashMap<>();
 //        options.put("end_time", String.valueOf(date.getTime() / 1000));
-//        options.put("lat", String.valueOf(lat));
-//        options.put("long", String.valueOf(lon));
         options.put("start_time", "1561334400");
-//        int radius = Integer.parseInt(searchFilter.getRadius());
-//        options.put("radius", String.valueOf(radius/3));
         options.put("radius", searchFilter.getRadius());
-        options.put("count", "100");
+        options.put("count", "140");
         options.put("sort", "0");
         options.put("v", "5.95");
         options.put("access_token", accessToken);
 
         apiRepository.search(areas, options)
                 .subscribe(photosResponseList -> {
-//                    if (photosResponse.getResponse() != null){
-//                        if (photosResponse.getResponse().getCount() == 0){
-//                            message.setValue("Упс! Здесь ничего нет");
-//                        }
-//                        photos.setValue(new LinkedList<>(photosResponse.getResponse().getItems()));
-//                        System.out.println("--------- SIZE = " + photosResponse.getResponse().getItems().size());
-//                    } else {
-//                        message.setValue("Ничего не найдено");
-//                    }
                     if (photosResponseList != null){
-                        Set<Item> set = new HashSet<>();
+                        prevLon = lon;
+                        prevLat = lat;
+                        this.searchFilter = searchFilter;
+
+                        allPhotos = new HashSet<>();
                         for (PhotosResponse response: photosResponseList){
-                            set.addAll(response.getResponse().getItems());
+                            allPhotos.addAll(response.getResponse().getItems());
                         }
-                        photos.setValue(set);
-                        System.out.println("------ SIZE = " + set.size());
-                        if (set.size() == 0){
-                            message.setValue("Упс! Здесь ничего нет");
+                        System.out.println("------ SIZE = " + allPhotos.size());
+                        if (allPhotos.size() == 0){
+                            showMessage("Упс! Здесь ничего нет");
+                            usersMap = new HashMap<>();
+                            prepare();
+                        } else {
+                            getUsersInfo();
                         }
                     } else {
-                        message.setValue("Ничего не найдено");
+                        showMessage("Ничего не найдено");
                     }
                 }, error -> {
                     error.printStackTrace();
-                    message.setValue("Не удалось загрузить данные");
+                    showMessage("Не удалось загрузить данные");
+                    progress.setValue(View.INVISIBLE);
                 });
+    }
+
+    @SuppressLint("CheckResult")
+    private void getUsersInfo(){
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Item item: allPhotos){
+            stringBuilder.append(item.getOwnerId()).append(",");
+        }
+        apiRepository.getUsers(stringBuilder.toString(), accessToken)
+                .subscribe(map ->{
+                    System.out.println("----------- Users size = " + map.size());
+                    usersMap = map;
+                    prepare();
+                }, throwable -> {
+                    throwable.printStackTrace();
+                    progress.setValue(View.INVISIBLE);
+                    showMessage("Не удалось загрузить данные");
+                });
+    }
+
+    private void prepare(){
+        System.out.println("------- Filter = " + searchFilter.toString());
+        if (allPhotos.size() == 0){
+            photosForShow.setValue(allPhotos);
+            return;
+        }
+        Set<Item> items = new HashSet<>();
+        for (Item item: allPhotos){
+            UserResponse user = usersMap.get(item.getOwnerId());
+            if (user != null){
+                if (check(user)){
+//                    System.out.println("-------- Add: " + user.toString());
+                    item.setUser(user);
+                    items.add(item);
+                }
+            }
+        }
+        System.out.println("------ After filter size = " + items.size());
+        if (items.size() == 0){
+            showMessage("Ничего не найдено по заданному фильтру");
+        }
+        progress.setValue(View.INVISIBLE);
+        photosForShow.setValue(items);
+    }
+
+    private boolean check(UserResponse user){
+        if (searchFilter.getSex() != 0 && user.getSex() != searchFilter.getSex()) {
+            return false;
+        }
+        int start = Integer.parseInt(searchFilter.getAgeStart());
+        int end = Integer.parseInt(searchFilter.getAgeFinish());
+        if (start == 14 && end == 80) {
+            return true;
+        }
+
+        if (user.getBdate() != null) {
+            String[] bdate = user.getBdate().split("\\.");
+            if (bdate.length == 2) {
+                return false;
+            }
+
+            int age = GregorianCalendar.getInstance().get(GregorianCalendar.YEAR) - Integer.valueOf(bdate[2]);
+            if (age >= start && age <= end) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @SuppressLint("CheckResult")
@@ -143,7 +221,7 @@ public class MapVM extends AndroidViewModel {
                 subscribe(placeSearchResponse -> {
                     progress.setValue(View.INVISIBLE);
                     if (placeSearchResponse.getPredictions().isEmpty()){
-                        message.setValue("Ничего не найдено");
+                        showMessage("Ничего не найдено");
                         Log.d("MapView", "searchPlace() status = " + placeSearchResponse.getStatus());
                     } else {
                         predictions.setValue(placeSearchResponse.getPredictions());
@@ -151,7 +229,7 @@ public class MapVM extends AndroidViewModel {
                 }, throwable -> {
                     throwable.printStackTrace();
                     progress.setValue(View.INVISIBLE);
-                    message.setValue("Не удалось загрузить данные");
+                    showMessage("Не удалось загрузить данные");
                 });
     }
 
@@ -167,8 +245,17 @@ public class MapVM extends AndroidViewModel {
                     }
                 }, throwable -> {
                     throwable.printStackTrace();
-                    message.setValue("Не удалось загрузить данные");
+                   showMessage("Не удалось загрузить данные");
                 });
     }
 
+    public void reset(SearchFilter searchFilter){
+        this.searchFilter = searchFilter;
+        prepare();
+    }
+
+    private void showMessage(String text){
+        message.setValue(text);
+        message.setValue(null);
+    }
 }

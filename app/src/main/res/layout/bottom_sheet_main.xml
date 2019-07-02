@@ -135,12 +135,14 @@
             android:text="@string/sex_any"
             />
         <RadioButton
+            android:id="@+id/sex_male"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/sex_male"
             />
         <RadioButton
+            android:id="@+id/sex_female"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
