@@ -3,7 +3,6 @@ package com.alekseyM73.viewmodel;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
-import android.location.Location;
 import android.util.Log;
 import android.view.View;
 
@@ -21,15 +20,11 @@ import com.alekseyM73.repository.ApiRepository;
 import com.alekseyM73.util.Area;
 import com.alekseyM73.util.Preferences;
 import com.alekseyM73.util.SearchFilter;
-import com.google.android.gms.maps.model.Circle;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,7 +46,6 @@ public class MapVM extends AndroidViewModel {
     private SearchFilter searchFilter;
 
     private double lat, prevLat = 0, lon, prevLon = 0;
-    private List<Circle> circles = new ArrayList<>();
 
     public MapVM(@NonNull Application application) {
         super(application);
@@ -82,43 +76,26 @@ public class MapVM extends AndroidViewModel {
         this.lon = lon;
     }
 
-    public double getLatitude() {
-        return lat;
-    }
-
-    public double getLongitude() {
-        return lon;
-    }
-
-    public void setCircles(List<Circle> circles) {
-        for (Circle circle : this.circles){
-            circle.remove();
-        }
-        this.circles = circles;
-    }
-
     @SuppressLint("CheckResult")
-    public void searchPhotos(Context context, SearchFilter searchFilter, List<Area> areas){
+    public void searchPhotos(Context context, SearchFilter searchFilter){
         progress.setValue(View.VISIBLE);
-        if (accessToken == null){
-            accessToken = new Preferences().getToken(context);
-        }
+
         if (prevLat == lat && prevLon == lon && this.searchFilter.getRadius().equals(searchFilter.getRadius())){
             this.searchFilter = searchFilter;
             prepare();
             return;
         }
-        Date date = new Date();
+        if (accessToken == null){
+            accessToken = new Preferences().getToken(context);
+        }
         Map<String, String> options = new HashMap<>();
-//        options.put("end_time", String.valueOf(date.getTime() / 1000));
-        options.put("start_time", "1561334400");
         options.put("radius", searchFilter.getRadius());
         options.put("count", "200");
         options.put("sort", "0");
         options.put("v", "5.95");
         options.put("access_token", accessToken);
 
-        apiRepository.search(areas, options)
+        apiRepository.search(getAreas(Integer.parseInt(searchFilter.getRadius())), options)
                 .subscribe(photosResponseList -> {
                     if (photosResponseList != null){
                         prevLon = lon;
@@ -129,7 +106,7 @@ public class MapVM extends AndroidViewModel {
                         for (PhotosResponse response: photosResponseList){
                             allPhotos.addAll(response.getResponse().getItems());
                         }
-                        System.out.println("------ SIZE = " + allPhotos.size());
+                        Log.d("MapVM", "search(): Photos size = " + allPhotos.size());
                         if (allPhotos.size() == 0){
                             showMessage("Упс! Здесь ничего нет");
                             usersMap = new HashMap<>();
@@ -158,7 +135,7 @@ public class MapVM extends AndroidViewModel {
         }
         apiRepository.getUsers(stringBuilder.toString(), accessToken)
                 .subscribe(map ->{
-                    System.out.println("----------- Users size = " + map.size());
+                    Log.d("MapVM", "getUsersInfo(): Users size = " + map.size());
                     usersMap = map;
                     prepare();
                 }, throwable -> {
@@ -172,6 +149,7 @@ public class MapVM extends AndroidViewModel {
         System.out.println("------- Filter = " + searchFilter.toString());
         if (allPhotos.size() == 0){
             photosForShow.setValue(allPhotos);
+            progress.setValue(View.INVISIBLE);
             return;
         }
         Set<Item> items = new HashSet<>();
@@ -185,7 +163,6 @@ public class MapVM extends AndroidViewModel {
                 }
             }
         }
-        System.out.println("------ After filter size = " + items.size());
         if (items.size() == 0){
             showMessage("Ничего не найдено по заданному фильтру");
         }
@@ -260,5 +237,23 @@ public class MapVM extends AndroidViewModel {
     private void showMessage(String text){
         message.setValue(text);
         message.setValue(null);
+    }
+
+    private List<Area> getAreas(int radius){
+        final double ONEGRAD = 0.00001038; //подгон, исходное значение 0.000009009
+
+        List<Area> areas = new ArrayList<>();
+
+        double newRadius = (double) (radius / 3) * 2 ;
+
+        areas.add(new Area(lat, lon - newRadius * ONEGRAD));
+        areas.add(new Area(lat, lon + newRadius * ONEGRAD));
+        areas.add(new Area(lat + newRadius * ONEGRAD, lon - newRadius * ONEGRAD));
+        areas.add(new Area(lat + newRadius * ONEGRAD, lon + newRadius * ONEGRAD));
+        areas.add(new Area(lat - newRadius * ONEGRAD, lon - newRadius * ONEGRAD));
+        areas.add(new Area(lat - newRadius * ONEGRAD, lon + newRadius * ONEGRAD));
+        areas.add(new Area(lat, lon));
+
+        return areas;
     }
 }

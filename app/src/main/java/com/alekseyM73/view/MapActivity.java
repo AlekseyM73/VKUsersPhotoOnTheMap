@@ -263,9 +263,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.setOnMarkerClickListener(mClusterManager);
         mMap.setOnMarkerDragListener(this);
 
+        mClusterManager.getMarkerCollection().getMarkers();
+
         setViews();
     }
-
 
     private void addItems(Set<Item> items) {
         if (mClusterManager == null) return;
@@ -386,63 +387,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void search(){
         SearchFilter searchFilter = getFilterValue();
-        mapVM.searchPhotos(this, searchFilter,
-                setAreas(mapVM.getLatitude(), mapVM.getLongitude(), Integer.parseInt(searchFilter.getRadius())));
+        mapVM.searchPhotos(this, searchFilter);
     }
 
-    private List<Area> setAreas(double lat, double lon, int radius){
-        final double ONEGRAD = 0.00001038; //подгон, исходное значение 0.000009009
-
-//        List<Circle> circleList = new ArrayList<>();
-        List<Area> areas = new ArrayList<>();
-
-        double newRadius = (double) (radius / 3) * 2 ;
-
-//        circleList.add(createCircle(
-//                lat,
-//                lon - (double) radius * ONEGRAD,
-//                newRadius, Color.RED));
-        areas.add(new Area(lat, lon - newRadius * ONEGRAD));
-
-//        circleList.add(createCircle(
-//                lat,
-//                lon + (double) radius * ONEGRAD,
-//                newRadius, Color.MAGENTA));
-        areas.add(new Area(lat, lon + newRadius * ONEGRAD));
-
-//        circleList.add(createCircle(
-//                lat + (double) radius/2 * ONEGRAD, //0.00003 подгон
-//                lon - (double) radius/2 * ONEGRAD,
-//                newRadius, Color.GREEN));
-        areas.add(new Area(lat + newRadius * ONEGRAD, lon - newRadius * ONEGRAD));
-
-//        circleList.add(createCircle(
-//                lat + (double) radius/2 * ONEGRAD,
-//                lon + (double) radius/2 * ONEGRAD,
-//                newRadius, Color.BLUE));
-        areas.add(new Area(lat + newRadius * ONEGRAD, lon + newRadius * ONEGRAD));
-
-//        circleList.add(createCircle(
-//                lat - (double) radius/2 * ONEGRAD,
-//                lon - (double) radius/2 * ONEGRAD,
-//                newRadius, Color.YELLOW));
-        areas.add(new Area(lat - newRadius * ONEGRAD, lon - newRadius * ONEGRAD));
-
-//        circleList.add(createCircle(
-//                lat - (double) radius/2 * ONEGRAD,
-//                lon + (double) radius/2 * ONEGRAD,
-//                newRadius, Color.CYAN));
-        areas.add(new Area(lat - newRadius * ONEGRAD, lon + newRadius * ONEGRAD));
-
-//        circleList.add(createCircle(
-//                lat,
-//                lon,
-//                newRadius, Color.BLACK));
-        areas.add(new Area(lat, lon));
-
- //       mapVM.setCircles(circleList);
-        return areas;
-    }
 
     private Circle createCircle(double lat, double lon, double radius, int color){
         return mMap.addCircle(new CircleOptions()
@@ -500,7 +447,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMarkerDragEnd(Marker marker) {
         mapVM.setLocation(marker.getPosition().latitude, marker.getPosition().longitude);
-
         mMap.moveCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
     }
 }
