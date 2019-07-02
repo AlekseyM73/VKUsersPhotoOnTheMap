@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alekseyM73.Application;
 import com.alekseyM73.PhotoListener;
 import com.alekseyM73.R;
 import com.alekseyM73.adapter.PhotosAdapter;
@@ -55,6 +56,12 @@ public class PhotosActivity extends AppCompatActivity implements PhotoListener {
         if (getIntent().getExtras() != null){
             String json = getIntent().getStringExtra(KEY_PHOTOS);
             Gson gson = new Gson();
+            Type listType = new TypeToken<LinkedList<Item>>(){}.getType();
+            LinkedList<Item> mapItems = gson.fromJson(json, listType);
+            photosVM.setPhotos(mapItems);
+        } else {
+            Gson gson = new Gson();
+            String json =gson.toJson(Application.photosToGallery);
             Type listType = new TypeToken<LinkedList<Item>>(){}.getType();
             LinkedList<Item> mapItems = gson.fromJson(json, listType);
             photosVM.setPhotos(mapItems);

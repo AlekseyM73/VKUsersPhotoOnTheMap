@@ -2,13 +2,19 @@ package com.alekseyM73;
 
 import android.content.Intent;
 
+import com.alekseyM73.model.photo.Item;
 import com.alekseyM73.view.MainActivity;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
 import com.google.android.libraries.places.api.Places;
 
+import java.util.HashSet;
+
 public class Application extends android.app.Application{
+
+    public static HashSet<Item> photosToGallery = new HashSet<>();
+
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
         public void onVKAccessTokenChanged(VKAccessToken oldToken, VKAccessToken newToken) {

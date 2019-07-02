@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Looper;
@@ -20,16 +19,13 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
-
+import com.alekseyM73.Application;
 import com.alekseyM73.R;
 import com.alekseyM73.adapter.PlaceAutoCompleteAdapter;
 import com.alekseyM73.model.search.Prediction;
@@ -61,9 +57,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.Gson;
 import com.google.maps.android.clustering.ClusterManager;
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -75,7 +69,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private Marker currentMarker;
-    private HashSet<Item> photosToGallery = new HashSet<>();
     private View vGoToLocation;
     private View vGoSearch;
     private View vGoToGallery;
@@ -88,7 +81,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private RangeBar radiusRangeBar, ageRangeBar;
 
     private MapVM mapVM;
-    private TextView reset;
+    public TextView reset;
     private RadioGroup sexRadioGroup;
     private ProgressBar progressBar;
 
@@ -120,12 +113,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         vGoToGallery = findViewById(R.id.to_gallery_click);
 
         vGoToGallery.setOnClickListener(view -> {
-            if (!photosToGallery.isEmpty()){
-                Gson gson = new Gson();
-                String json = gson.toJson(photosToGallery);
+            if (!Application.photosToGallery.isEmpty()){
                 startActivity(
-                        new Intent(MapActivity.this, PhotosActivity.class)
-                                .putExtra(PhotosActivity.KEY_PHOTOS, json));
+                        new Intent(MapActivity.this, PhotosActivity.class));
             }
         });
 
@@ -168,7 +158,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapVM = ViewModelProviders.of(this).get(MapVM.class);
 
         mapVM.getPhotos().observe(this, items -> {
-            addItemsToGallery(items);
+
             addItems(items);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         });
@@ -274,32 +264,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         setViews();
     }
-    private void addItemsToGallery (Set<Item> items){
-        for (Item item : items) {
-            if (item.getLat() == null || item.getLon() == null){
-                continue;
-            }
-            GlideApp.with(this)
-                    .asBitmap()
-                    .load(item.getPhotos().get(0).getUrl())
-                    .into(new CustomTarget<Bitmap>(){
-                        @Override
-                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                            item.setBitmap(resource);
-                            photosToGallery.add(item);
-                        }
 
-                        @Override
-                        public void onLoadCleared(@Nullable Drawable placeholder) {
-                        }
-    });
-        }
-    }
 
     private void addItems(Set<Item> items) {
         if (mClusterManager == null) return;
         mClusterManager.clearItems();
         mClusterManager.cluster();
+        Application.photosToGallery.clear();
 
         for (Item item : items) {
             if (item.getLat() == null || item.getLon() == null){
@@ -314,6 +285,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             item.setBitmap(resource);
                             mClusterManager.addItem(item);
                             mClusterManager.cluster();
+                            Application.photosToGallery.add(item);
                         }
 
                         @Override
