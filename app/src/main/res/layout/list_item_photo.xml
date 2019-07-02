@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="1:1"
-            android:background="@android:color/black"
+            android:background="@drawable/photo_placeholder"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             />

@@ -158,7 +158,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapVM = ViewModelProviders.of(this).get(MapVM.class);
 
         mapVM.getPhotos().observe(this, items -> {
-
+            Application.photosToGallery = items;
             addItems(items);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         });
@@ -272,7 +272,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (mClusterManager == null) return;
         mClusterManager.clearItems();
         mClusterManager.cluster();
-        Application.photosToGallery.clear();
 
         for (Item item : items) {
             if (item.getLat() == null || item.getLon() == null){
@@ -287,7 +286,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             item.setBitmap(resource);
                             mClusterManager.addItem(item);
                             mClusterManager.cluster();
-                            Application.photosToGallery.add(item);
                         }
 
                         @Override

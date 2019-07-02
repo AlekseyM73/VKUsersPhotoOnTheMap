@@ -10,10 +10,11 @@ import com.vk.sdk.VKSdk;
 import com.google.android.libraries.places.api.Places;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class Application extends android.app.Application{
 
-    public static HashSet<Item> photosToGallery = new HashSet<>();
+    public static Set<Item> photosToGallery;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
