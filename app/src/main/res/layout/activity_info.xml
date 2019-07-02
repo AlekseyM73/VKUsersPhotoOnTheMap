@@ -26,8 +26,8 @@
 
     <ImageView
         android:id="@+id/iv_photo"
-        android:layout_width="265dp"
-        android:layout_height="162dp"
+        android:layout_width="306dp"
+        android:layout_height="169dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -60,8 +60,9 @@
         android:textColor="@color/colorTextSecondaryLight"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/full_name" />
+        app:layout_constraintTop_toBottomOf="@+id/bday" />
 
     <TextView
         android:id="@+id/bday"
@@ -73,8 +74,9 @@
         android:textColor="@color/colorTextSecondaryLight"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/city" />
+        app:layout_constraintTop_toBottomOf="@+id/full_name" />
 
     <Button
         android:id="@+id/butToAlbum"
@@ -86,7 +88,7 @@
         android:text="Перейти в альбом"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bday" />
+        app:layout_constraintTop_toBottomOf="@+id/city" />
 
     <Button
         android:id="@+id/butToPage"

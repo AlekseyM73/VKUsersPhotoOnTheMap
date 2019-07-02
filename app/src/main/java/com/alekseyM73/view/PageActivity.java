@@ -35,7 +35,7 @@ public class PageActivity extends AppCompatActivity {
                     webView.loadUrl(URL.substring(0, URL.length()-3) + idPage);
                 }
             }else if(arguments.get("IDalbum") != null){
-                Long idAlbum = arguments.getLong("IDalbum");
+                String idAlbum = arguments.getString("IDalbum");
                 webView.loadUrl(URLulbum + idAlbum);
             }
         }

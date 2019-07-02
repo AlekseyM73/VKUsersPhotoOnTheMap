@@ -20,7 +20,7 @@ public class Item implements ClusterItem{
 
     @SerializedName("album_id")
     @Expose
-    private Long albumId;
+    private String albumId;
 
     @SerializedName("owner_id")
     @Expose
@@ -66,11 +66,11 @@ public class Item implements ClusterItem{
         this.id = id;
     }
 
-    public Long getAlbumId() {
+    public String getAlbumId() {
         return albumId;
     }
 
-    public void setAlbumId(Long albumId) {
+    public void setAlbumId(String albumId) {
         this.albumId = albumId;
     }
 
