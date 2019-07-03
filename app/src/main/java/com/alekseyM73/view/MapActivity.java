@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Looper;
@@ -85,6 +86,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private RadioGroup sexRadioGroup;
     private ProgressBar progressBar;
 
+    private Circle radiusCircle;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,9 +103,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         vGoToLocation = findViewById(R.id.to_location);
 
         vGoToLocation.setOnClickListener(v -> {
-//            if (currentMarker != null) {
-                findLocation();
-//            }
+            findLocation();
         });
 
         vGoSearch = findViewById(R.id.search_click);
@@ -113,7 +114,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         vGoToGallery = findViewById(R.id.to_gallery_click);
 
         vGoToGallery.setOnClickListener(view -> {
-            if (!Application.photosToGallery.isEmpty()){
+            if (Application.photosToGallery != null && !Application.photosToGallery.isEmpty()){
                 startActivity(
                         new Intent(MapActivity.this, PhotosActivity.class));
             }
@@ -388,15 +389,24 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapVM.setLocation(latLng.latitude, latLng.longitude);
         SearchFilter searchFilter = getFilterValue();
         mapVM.searchPhotos(this, searchFilter);
+        createCircle(latLng, Integer.parseInt(searchFilter.getRadius()) * 3);
     }
 
-    private Circle createCircle(double lat, double lon, double radius, int color){
-        return mMap.addCircle(new CircleOptions()
-                .center(new LatLng(lat, lon))
-                .radius(radius)
-                .strokeColor(color)
-                .strokeWidth(3)
-        );
+    private void createCircle(LatLng latLng, int radius){
+        if (mMap == null){
+            return;
+        }
+        if (radiusCircle == null){
+            radiusCircle = mMap.addCircle(new CircleOptions()
+                    .fillColor(getResources().getColor(R.color.radiusColor))
+                    .radius(radius)
+                    .center(latLng)
+                    .strokeWidth(0)
+            );
+        } else {
+            radiusCircle.setCenter(latLng);
+            radiusCircle.setRadius(radius);
+        }
     }
 
     private void showMyLocation(double lat, double lon) {

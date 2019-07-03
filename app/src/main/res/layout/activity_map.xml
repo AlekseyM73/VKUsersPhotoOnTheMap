@@ -52,7 +52,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:background="@drawable/ic_search"
-            android:backgroundTint="@color/colorAccent" />
+            android:backgroundTint="@color/colorMapViews" />
 
     </androidx.cardview.widget.CardView>
 
@@ -70,7 +70,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:background="@drawable/ic_gallery"
-            android:backgroundTint="@color/colorAccent"
+            android:backgroundTint="@color/colorMapViews"
             />
 
     </androidx.cardview.widget.CardView>

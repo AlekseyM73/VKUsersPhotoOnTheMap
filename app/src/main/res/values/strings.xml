@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">VKUsersPhotoOnTheMap</string>
+    <string name="app_name">VK Photo Radar</string>
     <string name="permissions_request_message">Для корректной работы приложения необходим доступ к местоположению</string>
     <string name="ok">Включить</string>
     <integer name="com_vk_sdk_AppId">7033600</integer>

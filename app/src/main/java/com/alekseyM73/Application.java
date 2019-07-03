@@ -9,7 +9,6 @@ import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
 import com.google.android.libraries.places.api.Places;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public class Application extends android.app.Application{
@@ -30,7 +29,6 @@ public class Application extends android.app.Application{
     @Override
     public void onCreate() {
         super.onCreate();
-
         Places.initialize(getApplicationContext(), "AIzaSyDBgLHJYirxcbCrWqn32GMNOcl9XYVyZQc");
         vkAccessTokenTracker.startTracking();
         VKSdk.initialize(this);

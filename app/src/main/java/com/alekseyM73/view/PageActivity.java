@@ -1,11 +1,13 @@
 package com.alekseyM73.view;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
+import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toolbar;
@@ -27,6 +29,7 @@ public class PageActivity extends AppCompatActivity {
     public static final String ACTION_PAGE = "show_page";
 
     private WebView webView;
+    private String url;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -41,6 +44,7 @@ public class PageActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> {
             finish();
         });
+        toolbar.inflateMenu(R.menu.menu_page);
 
         Bundle arguments = getIntent().getExtras();
         if (arguments != null) {
@@ -55,14 +59,32 @@ public class PageActivity extends AppCompatActivity {
                 long id = arguments.getLong(KEY_ID);
                 if (action.equals(ACTION_PAGE)){
                     if (id > 0){
-                        webView.loadUrl(URL_PAGE + id);
+                        url = URL_PAGE + id;
+                        webView.loadUrl(url);
                     }
                 } else {
                     long photoId = arguments.getLong(KEY_PHOTO_ID);
-                    webView.loadUrl(URL_PHOTO + id + "_" + photoId);
+                    url = URL_PHOTO + id + "_" + photoId;
+                    webView.loadUrl(url);
                 }
             }
         }
+        toolbar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()){
+                case R.id.menu_page_setting: {
+                    Uri address = Uri.parse(url);
+                    Intent openLinkIntent = new Intent(Intent.ACTION_VIEW, address);
+
+                    if (openLinkIntent.resolveActivity(getPackageManager()) != null) {
+                        startActivity(openLinkIntent);
+                    } else {
+                        Log.d("Intent", "Не получается обработать намерение!");
+                    }
+                    return true;
+                }
+            }
+            return false;
+        });
     }
 
     @Override

@@ -10,7 +10,7 @@
     <color name="colorTextSecondaryLight">#CACACA</color>
     <color name="colorInputBack">#F0F0F0</color>
     <color name="colorBtnBackground">#AE000000</color>
-    <color name="c">#48598FE0</color>
+    <color name="radiusColor">#48598FE0</color>
     <color name="colorBackTransparent">#79E6E6E6</color>
     <color name="colorMapViews">#3D3D3D</color>
     <color name="colorMapViewsBackground">#D2FFFFFF</color>

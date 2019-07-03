@@ -15,8 +15,10 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:title="Имя"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark"
-        />
+        android:titleTextColor="@android:color/white"
+        app:theme="@style/ThemeOverlay.AppCompat.Light"
+        >
+    </Toolbar>
 
     <WebView
         android:id="@+id/PageWeb"
