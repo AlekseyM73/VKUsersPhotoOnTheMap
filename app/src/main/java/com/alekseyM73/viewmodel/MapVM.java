@@ -3,6 +3,7 @@ package com.alekseyM73.viewmodel;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
 
@@ -20,6 +21,9 @@ import com.alekseyM73.repository.ApiRepository;
 import com.alekseyM73.util.Area;
 import com.alekseyM73.util.Preferences;
 import com.alekseyM73.util.SearchFilter;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -44,6 +48,8 @@ public class MapVM extends AndroidViewModel {
     private MutableLiveData<PlaceLocation> location = new MutableLiveData<>();
 
     private SearchFilter searchFilter;
+    private boolean findLocation = true;
+    private CircleOptions circleOptions;
 
     private double lat, prevLat = 0, lon, prevLon = 0;
 
@@ -67,13 +73,32 @@ public class MapVM extends AndroidViewModel {
         return predictions;
     }
 
+    public GoogleMap map;
+
     public LiveData<PlaceLocation> getLocation() {
         return location;
     }
 
+    public boolean isFindLocation() {
+        return findLocation;
+    }
+
     public void setLocation(double lat, double lon){
+        findLocation = false;
         this.lat = lat;
         this.lon = lon;
+    }
+
+    public void setMap(GoogleMap map){
+        this.map = map;
+    }
+
+    public CircleOptions getCircleOptions() {
+        return circleOptions;
+    }
+
+    public void setCircleOptions(CircleOptions circleOptions) {
+        this.circleOptions = circleOptions;
     }
 
     @SuppressLint("CheckResult")
@@ -89,8 +114,8 @@ public class MapVM extends AndroidViewModel {
             accessToken = new Preferences().getToken(context);
         }
         Map<String, String> options = new HashMap<>();
-        options.put("radius", searchFilter.getRadius());
-        options.put("count", "200");
+        options.put("radius", getRadius(searchFilter));
+        options.put("count", "100");
         options.put("sort", "0");
         options.put("v", "5.95");
         options.put("access_token", accessToken);
@@ -243,16 +268,37 @@ public class MapVM extends AndroidViewModel {
 
         List<Area> areas = new ArrayList<>();
 
-        double newRadius = (double) (radius / 3) * 2 ;
+        if (radius == 10){
+            areas.add(new Area(lat, lon));
+            return areas;
+        }
 
-        areas.add(new Area(lat, lon - newRadius * ONEGRAD));
-        areas.add(new Area(lat, lon + newRadius * ONEGRAD));
-        areas.add(new Area(lat + newRadius * ONEGRAD, lon - newRadius * ONEGRAD));
-        areas.add(new Area(lat + newRadius * ONEGRAD, lon + newRadius * ONEGRAD));
-        areas.add(new Area(lat - newRadius * ONEGRAD, lon - newRadius * ONEGRAD));
-        areas.add(new Area(lat - newRadius * ONEGRAD, lon + newRadius * ONEGRAD));
+        areas.add(new Area(lat, lon - radius * ONEGRAD));
+        areas.add(new Area(lat, lon + radius * ONEGRAD));
+        areas.add(new Area(lat + (double) radius/2 * ONEGRAD, lon - (double) radius/2 * ONEGRAD));
+        areas.add(new Area(lat + (double) radius/2 * ONEGRAD,  lon + (double) radius/2 * ONEGRAD));
+        areas.add(new Area(lat - (double) radius/2 * ONEGRAD,  lon - (double) radius/2 * ONEGRAD));
+        areas.add(new Area(lat - (double) radius/2 * ONEGRAD,  lon + (double) radius/2 * ONEGRAD));
         areas.add(new Area(lat, lon));
 
         return areas;
+    }
+
+    private String getRadius(SearchFilter searchFilter){
+        switch (searchFilter.getRadius()){
+            case "10": {
+                return "10";
+            }
+            case "100": {
+                return "10";
+            }
+            case "800": {
+                return "100";
+            }
+            case "6000": {
+                return "800";
+            }
+            default:return searchFilter.getRadius();
+        }
     }
 }

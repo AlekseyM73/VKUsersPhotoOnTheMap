@@ -3,13 +3,12 @@ package com.alekseyM73.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alekseyM73.PhotoListener;
+import com.alekseyM73.listeners.PhotoListener;
 import com.alekseyM73.R;
 import com.alekseyM73.model.photo.Item;
 import com.squareup.picasso.Picasso;
@@ -64,7 +63,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             photo = itemView.findViewById(R.id.photo);
 
             photo.setOnClickListener(v ->
-                    listener.onClick(items.get(getAdapterPosition())));
+                    listener.onClick(getAdapterPosition()));
         }
     }
 }

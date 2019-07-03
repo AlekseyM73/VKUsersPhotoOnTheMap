@@ -11,7 +11,7 @@
     <application
         android:name=".Application"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/icon"
         android:supportsRtl="true"
@@ -54,7 +54,7 @@
             android:theme="@style/VK.Transparent" />
 
         <activity android:name=".view.PhotosActivity"
-            android:theme="@style/AppTheme.NoActionBarTranslucent"/>
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
