@@ -1,6 +1,7 @@
 package com.alekseyM73.view;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -40,7 +41,12 @@ public class PhotosActivity extends AppCompatActivity implements PhotoListener {
         adapter = new PhotosAdapter(new LinkedList<>(), this::onClick);
         recyclerView.setAdapter(adapter);
 
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        }
 
         photosVM = ViewModelProviders.of(this).get(PhotosVM.class);
 
