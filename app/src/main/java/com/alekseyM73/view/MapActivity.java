@@ -55,8 +55,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.Gson;
 import com.google.maps.android.clustering.ClusterManager;
-
-import java.util.List;
 import java.util.Set;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
@@ -64,21 +62,17 @@ import static android.content.pm.PackageManager.PERMISSION_DENIED;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerDragListener{
 
     private final int REQUEST_LOCATION = 100;
-
     private GoogleMap mMap;
     private ClusterManager<Item> mClusterManager;
-
     private FusedLocationProviderClient locationClient;
-
     private BottomSheetBehavior bottomSheetBehavior;
     private AutoCompleteTextView vSearch;
     private RangeBar radiusRangeBar, ageRangeBar;
-
     private MapVM mapVM;
     public TextView reset;
     private RadioGroup sexRadioGroup;
     private ProgressBar progressBar;
-
+    private boolean isClusteringEnabled = true;
     private Circle radiusCircle;
 
 
@@ -92,6 +86,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         locationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("clustering",isClusteringEnabled);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        isClusteringEnabled = savedInstanceState.getBoolean("clustering");
+    }
+
     private void setViews(){
         mapVM = ViewModelProviders.of(this).get(MapVM.class);
 
@@ -100,6 +106,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         mapVM.setMap(mMap);
+
+        View vSwitchClustering = findViewById(R.id.switch_clustering);
+        vSwitchClustering.setOnClickListener(v->{
+            if (isClusteringEnabled){
+                isClusteringEnabled = false;
+               mClusterManager.setRenderer(new IconRenderer(this, mMap, mClusterManager, isClusteringEnabled));
+                Toast.makeText(this, "Кластеризация фотографий отключена", Toast.LENGTH_SHORT).show();
+            } else {
+                isClusteringEnabled = true;
+                mClusterManager.setRenderer(new IconRenderer(this, mMap, mClusterManager, isClusteringEnabled));
+                Toast.makeText(this, "Кластеризация фотографий включена", Toast.LENGTH_SHORT).show();
+            }
+
+        });
         View vGoToLocation = findViewById(R.id.to_location);
 
         vGoToLocation.setOnClickListener(v -> {
@@ -240,7 +260,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mUiSettings.setZoomGesturesEnabled(true);
 
         mClusterManager = new ClusterManager<Item>(this, mMap);
-        mClusterManager.setRenderer(new IconRenderer(this, mMap, mClusterManager));
+
+
+        mClusterManager.setRenderer(new IconRenderer(this, mMap, mClusterManager, isClusteringEnabled));
         mClusterManager.setOnClusterClickListener(cluster -> {
             if (cluster.getItems().size() == Application.photosToGallery.size()){
                 startActivity(

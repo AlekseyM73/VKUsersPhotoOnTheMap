@@ -1,19 +1,15 @@
 package com.alekseyM73.model.photo;
 
 import android.graphics.Bitmap;
-import android.util.Log;
-
 import com.alekseyM73.model.user.UserResponse;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.maps.android.clustering.ClusterItem;
-
-import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class Item implements ClusterItem{
+public class Item implements ClusterItem {
 
     @SerializedName("id")
     @Expose

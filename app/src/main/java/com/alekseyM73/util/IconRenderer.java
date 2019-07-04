@@ -29,10 +29,11 @@ public class IconRenderer extends DefaultClusterRenderer<Item> {
     private final ImageView mImageView;
     private final ImageView mClusterImageView;
     private final int mDimension;
+    private boolean isClusteringEnabled;
 
-    public IconRenderer(Activity context, GoogleMap map, ClusterManager<Item> clusterManager) {
+    public IconRenderer(Activity context, GoogleMap map, ClusterManager<Item> clusterManager, boolean clusteringEnabled) {
         super(context, map, clusterManager);
-
+        this.isClusteringEnabled = clusteringEnabled;
         View multiProfile = context.getLayoutInflater().inflate(R.layout.multi_profile, null);
         mClusterIconGenerator.setContentView(multiProfile);
         mClusterImageView = (ImageView) multiProfile.findViewById(R.id.image);
@@ -78,6 +79,6 @@ public class IconRenderer extends DefaultClusterRenderer<Item> {
 
     @Override
     protected boolean shouldRenderAsCluster(Cluster<Item> cluster) {
-        return super.shouldRenderAsCluster(cluster);
+        return isClusteringEnabled;
     }
 }

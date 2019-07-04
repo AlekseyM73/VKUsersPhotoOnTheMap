@@ -57,6 +57,22 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/switch_clustering"
+        style="@style/MapCardView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="56dp"
+        app:layout_constraintBottom_toTopOf="@id/search_click"
+        app:layout_constraintEnd_toEndOf="@id/search_click">
+
+        <View
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@android:drawable/picture_frame"
+            android:backgroundTint="@color/colorMapViews" />
+
+    </androidx.cardview.widget.CardView>
+    <androidx.cardview.widget.CardView
         android:id="@+id/to_gallery_click"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
