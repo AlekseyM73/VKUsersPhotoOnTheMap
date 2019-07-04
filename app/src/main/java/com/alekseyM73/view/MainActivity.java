@@ -18,14 +18,29 @@ public class MainActivity extends Activity {
 
     private TextView tvAuth;
     private View layout;
+   // String token = new Preferences().getToken(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Bundle arg = getIntent().getExtras();
+        if (arg != null){
+            Boolean logout = arg.getBoolean("logout");
+           if (logout){
+               new Preferences().saveToken(null,this);
+               VKSdk.logout();
+            }
+        }
         initViews();
         login();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+
     }
 
     private void initViews(){

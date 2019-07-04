@@ -24,7 +24,7 @@
         style="@style/MapCardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="4dp"
         app:layout_constraintEnd_toEndOf="@id/search_click"
         app:layout_constraintTop_toBottomOf="@id/search_click">
 
@@ -37,14 +37,15 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/search_click"
+        style="@style/MapCardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="80dp"
-        style="@style/MapCardView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+    >
 
         <View
             android:layout_width="24dp"
@@ -59,9 +60,9 @@
         style="@style/MapCardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="216dp"
-        app:layout_constraintBottom_toTopOf="@id/search_click"
-        app:layout_constraintEnd_toEndOf="@id/search_click">
+        android:layout_marginBottom="0dp"
+        app:layout_constraintBottom_toTopOf="@id/switch_clustering"
+        app:layout_constraintEnd_toEndOf="@id/switch_clustering">
 
         <View
             android:layout_width="24dp"
@@ -76,7 +77,7 @@
         style="@style/MapCardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="56dp"
+        android:layout_marginBottom="40dp"
         app:layout_constraintBottom_toTopOf="@id/search_click"
         app:layout_constraintEnd_toEndOf="@id/search_click">
 
@@ -87,22 +88,20 @@
             android:backgroundTint="@color/colorMapViews" />
 
     </androidx.cardview.widget.CardView>
+
     <androidx.cardview.widget.CardView
         android:id="@+id/to_gallery_click"
+        style="@style/MapCardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        style="@style/MapCardView"
-        app:layout_constraintEnd_toEndOf="@id/search_click"
         app:layout_constraintBottom_toTopOf="@id/search_click"
-        >
+        app:layout_constraintEnd_toEndOf="@id/search_click">
 
         <View
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:background="@drawable/ic_gallery"
-            android:backgroundTint="@color/colorMapViews"
-            />
+            android:backgroundTint="@color/colorMapViews" />
 
     </androidx.cardview.widget.CardView>
 

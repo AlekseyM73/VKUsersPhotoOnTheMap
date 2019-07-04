@@ -31,6 +31,7 @@ import com.alekseyM73.adapter.PlaceAutoCompleteAdapter;
 import com.alekseyM73.model.search.Prediction;
 import com.alekseyM73.util.GlideApp;
 import com.alekseyM73.util.IconRenderer;
+import com.alekseyM73.util.Preferences;
 import com.alekseyM73.util.SearchFilter;
 import com.alekseyM73.viewmodel.MapVM;
 import com.appyvet.materialrangebar.RangeBar;
@@ -55,6 +56,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.Gson;
 import com.google.maps.android.clustering.ClusterManager;
+
 import java.util.Set;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
@@ -90,12 +92,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("clustering",isClusteringEnabled);
+        if (bottomSheetBehavior != null){
+            outState.putInt("filterState", bottomSheetBehavior.getState());
+        }
+
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        isClusteringEnabled = savedInstanceState.getBoolean("clustering");
+        if (savedInstanceState != null){
+            isClusteringEnabled = savedInstanceState.getBoolean("clustering");
+
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
     }
 
     private void setViews(){
@@ -106,6 +122,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         mapVM.setMap(mMap);
+
+        View vLogout = findViewById(R.id.logout_click);
+        vLogout.setOnClickListener(v ->{
+            Intent intent = new Intent(MapActivity.this,MainActivity.class);
+            intent.putExtra("logout", true);
+            startActivity(intent);
+        } );
 
         View vSwitchClustering = findViewById(R.id.switch_clustering);
         vSwitchClustering.setOnClickListener(v->{
@@ -143,7 +166,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         View bottomS = findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomS);
-
         sexRadioGroup = findViewById(R.id.sex_group);
         radiusRangeBar = findViewById(R.id.rangeBar_radius);
         ageRangeBar = findViewById(R.id.rangeBar_age);
@@ -154,6 +176,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         vSearch.setOnClickListener( listener -> {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
         });
 
         vSearch.setOnFocusChangeListener((v, hasFocus) -> {
@@ -179,7 +202,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapVM.getPhotos().observe(this, items -> {
             Application.photosToGallery = items;
             addItems(items);
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         });
 
         mapVM.getMessage().observe(this, message ->{
