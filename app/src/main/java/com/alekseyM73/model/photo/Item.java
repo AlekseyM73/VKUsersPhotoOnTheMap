@@ -170,6 +170,7 @@ public class Item implements ClusterItem{
                 ", date=" + date +
                 ", lat=" + lat +
                 ", lon=" + lon +
+                ", user=" + user +
                 ", postId=" + postId +
                 ", userId=" + userId +
                 '}';

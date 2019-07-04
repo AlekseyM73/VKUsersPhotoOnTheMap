@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alekseyM73.Application;
-import com.alekseyM73.PhotoListener;
+import com.alekseyM73.listeners.PhotoListener;
 import com.alekseyM73.R;
 import com.alekseyM73.adapter.PhotosAdapter;
 import com.alekseyM73.model.photo.Item;
@@ -38,7 +38,7 @@ public class PhotosActivity extends AppCompatActivity implements PhotoListener {
         setContentView(R.layout.activity_photos);
 
         recyclerView = findViewById(R.id.rv_photos);
-        adapter = new PhotosAdapter(new LinkedList<>(), this::onClick);
+        adapter = new PhotosAdapter(new LinkedList<>(), this);
         recyclerView.setAdapter(adapter);
 
         int orientation = getResources().getConfiguration().orientation;
@@ -66,21 +66,17 @@ public class PhotosActivity extends AppCompatActivity implements PhotoListener {
             LinkedList<Item> mapItems = gson.fromJson(json, listType);
             photosVM.setPhotos(mapItems);
         } else {
-            Gson gson = new Gson();
-            String json =gson.toJson(Application.photosToGallery);
-            Type listType = new TypeToken<LinkedList<Item>>(){}.getType();
-            LinkedList<Item> mapItems = gson.fromJson(json, listType);
-            photosVM.setPhotos(mapItems);
+            photosVM.setPhotos(new LinkedList<>(Application.photosToGallery));
         }
     }
 
-
     @Override
-    public void onClick(Item item) {
+    public void onClick(int position) {
+        Gson gson = new Gson();
         Intent intent = new Intent(PhotosActivity.this, InfoActivity.class);
-        intent.putExtra(InfoActivity.USER, item.getUser());
-        intent.putExtra(InfoActivity.PHOTO_URL, item.getPhotos().get(item.getPhotos().size()-1).getUrl());
-        intent.putExtra(InfoActivity.PHOTO_ID, item.getId());
+        intent.putExtra(InfoActivity.ITEM, gson.toJson(photosVM.getPhotos().getValue()));
+        intent.putExtra(InfoActivity.CURRENT_ITEM, position);
+        intent.putExtra(InfoActivity.TYPE, InfoActivity.TYPE_LIST);
         startActivity(intent);
     }
 }

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Looper;
@@ -30,7 +29,6 @@ import com.alekseyM73.Application;
 import com.alekseyM73.R;
 import com.alekseyM73.adapter.PlaceAutoCompleteAdapter;
 import com.alekseyM73.model.search.Prediction;
-import com.alekseyM73.util.Area;
 import com.alekseyM73.util.GlideApp;
 import com.alekseyM73.util.IconRenderer;
 import com.alekseyM73.util.SearchFilter;
@@ -54,11 +52,10 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.Gson;
 import com.google.maps.android.clustering.ClusterManager;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Set;
 
@@ -69,10 +66,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private final int REQUEST_LOCATION = 100;
 
     private GoogleMap mMap;
-//    private Marker currentMarker;
-    private View vGoToLocation;
-    private View vGoSearch;
-    private View vGoToGallery;
     private ClusterManager<Item> mClusterManager;
 
     private FusedLocationProviderClient locationClient;
@@ -100,18 +93,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void setViews(){
-        vGoToLocation = findViewById(R.id.to_location);
+        mapVM = ViewModelProviders.of(this).get(MapVM.class);
+
+        if (mapVM.isFindLocation()) {
+            findLocation();
+        }
+
+        mapVM.setMap(mMap);
+        View vGoToLocation = findViewById(R.id.to_location);
 
         vGoToLocation.setOnClickListener(v -> {
             findLocation();
         });
 
-        vGoSearch = findViewById(R.id.search_click);
+        View vGoSearch = findViewById(R.id.search_click);
         vGoSearch.setOnClickListener(v->{
             search();
         });
 
-        vGoToGallery = findViewById(R.id.to_gallery_click);
+        View vGoToGallery = findViewById(R.id.to_gallery_click);
 
         vGoToGallery.setOnClickListener(view -> {
             if (Application.photosToGallery != null && !Application.photosToGallery.isEmpty()){
@@ -156,8 +156,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             mapVM.reset(getFilterValue());
         });
 
-        mapVM = ViewModelProviders.of(this).get(MapVM.class);
-
         mapVM.getPhotos().observe(this, items -> {
             Application.photosToGallery = items;
             addItems(items);
@@ -197,6 +195,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             vSearch.setText(prediction.getDescription());
             hideKeyboard();
         });
+
+        if (radiusCircle == null && mapVM.getCircleOptions() != null){
+            radiusCircle = mMap.addCircle(mapVM.getCircleOptions());
+        }
     }
 
     public void hideKeyboard() {
@@ -237,11 +239,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mUiSettings.setScrollGesturesEnabled(true);
         mUiSettings.setZoomGesturesEnabled(true);
 
-        findLocation();
-
         mClusterManager = new ClusterManager<Item>(this, mMap);
         mClusterManager.setRenderer(new IconRenderer(this, mMap, mClusterManager));
         mClusterManager.setOnClusterClickListener(cluster -> {
+            if (cluster.getItems().size() == Application.photosToGallery.size()){
+                startActivity(
+                        new Intent(MapActivity.this, PhotosActivity.class));
+                return true;
+            }
             Gson gson = new Gson();
             String json = gson.toJson(cluster.getItems());
             startActivity(
@@ -250,12 +255,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             );
             return false;
         });
+
         mClusterManager.setOnClusterItemClickListener(item -> {
             Intent intent = new Intent(MapActivity.this, InfoActivity.class);
-            intent.putExtra(InfoActivity.USER, item.getUser());
-            intent.putExtra(InfoActivity.PHOTO_URL, item.getPhotos().get(item.getPhotos().size()-1).getUrl());
-            intent.putExtra(InfoActivity.PHOTO_ID, item.getId());
-            intent.putExtra(InfoActivity.PHOTO_ID, item.getId());
+            intent.putExtra(InfoActivity.ITEM, new Gson().toJson(item));
+            intent.putExtra(InfoActivity.TYPE, InfoActivity.TYPE_ONE);
             startActivity(intent);
             return false;
         });
@@ -310,7 +314,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private LocationCallback locationCallback = new LocationCallback(){
         @Override
         public void onLocationResult(LocationResult locationResult) {
-            System.out.println("----------- Updates");
+            Log.v("MapActivity", "Updates");
             if (locationResult.getLastLocation() != null) {
                 showMyLocation(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude());
             } else {
@@ -362,8 +366,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         searchFilter.setAgeStart(ageRangeBar.getLeftPinValue());
         searchFilter.setAgeFinish(ageRangeBar.getRightPinValue());
         String[] radiusArray = getResources().getStringArray(R.array.radius_list);
-        int radius = Integer.parseInt(radiusArray[radiusRangeBar.getRightIndex()]);
-        searchFilter.setRadius(String.valueOf(radius/3));
+
+        searchFilter.setRadius(String.valueOf(radiusArray[radiusRangeBar.getRightIndex()]));
 
         RadioButton myRadioButton = findViewById(sexRadioGroup.getCheckedRadioButtonId());
         int index = sexRadioGroup.indexOfChild(myRadioButton);
@@ -389,40 +393,33 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapVM.setLocation(latLng.latitude, latLng.longitude);
         SearchFilter searchFilter = getFilterValue();
         mapVM.searchPhotos(this, searchFilter);
-        createCircle(latLng, Integer.parseInt(searchFilter.getRadius()) * 3);
+        createCircle(latLng, Integer.parseInt(searchFilter.getRadius()));
     }
 
     private void createCircle(LatLng latLng, int radius){
         if (mMap == null){
             return;
         }
-        if (radiusCircle == null){
-            radiusCircle = mMap.addCircle(new CircleOptions()
+        CircleOptions circleOptions = mapVM.getCircleOptions();
+        if (circleOptions == null){
+            circleOptions = new CircleOptions()
                     .fillColor(getResources().getColor(R.color.radiusColor))
-                    .radius(radius)
-                    .center(latLng)
-                    .strokeWidth(0)
-            );
+                    .strokeWidth(0);
+        }
+        circleOptions.center(latLng);
+        circleOptions.radius(radius);
+        mapVM.setCircleOptions(circleOptions);
+        if (radiusCircle == null){
+            radiusCircle = mMap.addCircle(circleOptions);
         } else {
-            radiusCircle.setCenter(latLng);
-            radiusCircle.setRadius(radius);
+            radiusCircle.setCenter(circleOptions.getCenter());
+            radiusCircle.setRadius(circleOptions.getRadius());
         }
     }
 
     private void showMyLocation(double lat, double lon) {
         LatLng latLng = new LatLng(lat, lon);
         mapVM.setLocation(lat, lon);
-//        if (currentMarker == null) {
-            // Add Marker to Map
-//            MarkerOptions option = new MarkerOptions();
-            // option.title("My Location");
-//            option.snippet("....");
-//            option.position(latLng);
-//            currentMarker = mMap.addMarker(option);
-//            currentMarker.setDraggable(true);
-//        } else {
-//            currentMarker.setPosition(latLng);
-//        }
         moveToLocation(latLng);
     }
 
