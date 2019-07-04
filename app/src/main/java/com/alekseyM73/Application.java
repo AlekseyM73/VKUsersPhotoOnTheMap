@@ -9,11 +9,13 @@ import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
 import com.google.android.libraries.places.api.Places;
 
+import java.util.List;
 import java.util.Set;
 
 public class Application extends android.app.Application{
 
     public static Set<Item> photosToGallery;
+    public static List<Item> itemsForViewPager;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override

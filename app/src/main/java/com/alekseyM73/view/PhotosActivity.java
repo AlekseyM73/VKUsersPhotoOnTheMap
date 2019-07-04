@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class PhotosActivity extends AppCompatActivity implements PhotoListener {
@@ -30,7 +31,6 @@ public class PhotosActivity extends AppCompatActivity implements PhotoListener {
     private RecyclerView recyclerView;
 
     public static final String KEY_PHOTOS = "com.alekseyM73.view.photos_activity.photos";
-    public static final String KEY_USERS = "com.alekseyM73.view.photos_activity.users";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,8 +73,8 @@ public class PhotosActivity extends AppCompatActivity implements PhotoListener {
     @Override
     public void onClick(int position) {
         Gson gson = new Gson();
+        Application.itemsForViewPager = new ArrayList(photosVM.getPhotos().getValue()){};
         Intent intent = new Intent(PhotosActivity.this, InfoActivity.class);
-        intent.putExtra(InfoActivity.ITEM, gson.toJson(photosVM.getPhotos().getValue()));
         intent.putExtra(InfoActivity.CURRENT_ITEM, position);
         intent.putExtra(InfoActivity.TYPE, InfoActivity.TYPE_LIST);
         startActivity(intent);
