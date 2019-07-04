@@ -92,10 +92,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("clustering",isClusteringEnabled);
-        if (bottomSheetBehavior != null){
-            outState.putInt("filterState", bottomSheetBehavior.getState());
-        }
-
     }
 
     @Override
@@ -103,7 +99,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState != null){
             isClusteringEnabled = savedInstanceState.getBoolean("clustering");
-
         }
 
     }
@@ -202,7 +197,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapVM.getPhotos().observe(this, items -> {
             Application.photosToGallery = items;
             addItems(items);
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         });
 
         mapVM.getMessage().observe(this, message ->{
@@ -439,6 +433,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         SearchFilter searchFilter = getFilterValue();
         mapVM.searchPhotos(this, searchFilter);
         createCircle(latLng, Integer.parseInt(searchFilter.getRadius()));
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     private void createCircle(LatLng latLng, int radius){
