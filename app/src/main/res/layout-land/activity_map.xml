@@ -20,13 +20,32 @@
         />
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/logout_click"
+        style="@style/MapCardView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/search_click"
+        >
+
+        <View
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/baseline_meeting_room_24px"
+            android:backgroundTint="@color/colorMapViews" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
         android:id="@+id/to_location"
         style="@style/MapCardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginBottom="90dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/search_click"
-        app:layout_constraintTop_toBottomOf="@id/search_click">
+        >
 
         <View
             android:layout_width="24dp"
@@ -41,10 +60,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="2dp"
+        app:layout_constraintBottom_toTopOf="@id/to_location"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
     >
 
         <View
@@ -56,35 +74,18 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/logout_click"
-        style="@style/MapCardView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="0dp"
-        app:layout_constraintBottom_toTopOf="@id/switch_clustering"
-        app:layout_constraintEnd_toEndOf="@id/switch_clustering">
-
-        <View
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:background="@drawable/baseline_meeting_room_24px"
-            android:backgroundTint="@color/colorMapViews" />
-
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
         android:id="@+id/switch_clustering"
         style="@style/MapCardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        app:layout_constraintBottom_toTopOf="@id/search_click"
+        android:layout_marginBottom="2dp"
+        app:layout_constraintBottom_toTopOf="@id/to_gallery_click"
         app:layout_constraintEnd_toEndOf="@id/search_click">
 
         <View
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:background="@android:drawable/picture_frame"
+            android:background="@drawable/ic_cluster"
             android:backgroundTint="@color/colorMapViews" />
 
     </androidx.cardview.widget.CardView>
@@ -94,6 +95,7 @@
         style="@style/MapCardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
         app:layout_constraintBottom_toTopOf="@id/search_click"
         app:layout_constraintEnd_toEndOf="@id/search_click">
 

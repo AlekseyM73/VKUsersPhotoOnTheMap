@@ -59,9 +59,10 @@
         style="@style/MapCardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="216dp"
-        app:layout_constraintBottom_toTopOf="@id/search_click"
-        app:layout_constraintEnd_toEndOf="@id/search_click">
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/search_click"
+        >
 
         <View
             android:layout_width="24dp"

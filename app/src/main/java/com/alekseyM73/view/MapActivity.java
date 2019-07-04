@@ -3,6 +3,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -25,6 +26,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
+
 import com.alekseyM73.Application;
 import com.alekseyM73.R;
 import com.alekseyM73.adapter.PlaceAutoCompleteAdapter;
@@ -271,8 +274,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         UiSettings mUiSettings = mMap.getUiSettings();
 
         mUiSettings.setMapToolbarEnabled(false);
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mUiSettings.setZoomControlsEnabled(true);
+        }
         mUiSettings.setMyLocationButtonEnabled(true);
-        mUiSettings.setZoomControlsEnabled(true);
         mUiSettings.setScrollGesturesEnabled(true);
         mUiSettings.setZoomGesturesEnabled(true);
 
