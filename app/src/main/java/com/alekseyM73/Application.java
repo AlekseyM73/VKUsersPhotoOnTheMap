@@ -31,7 +31,7 @@ public class Application extends android.app.Application{
     @Override
     public void onCreate() {
         super.onCreate();
-        Places.initialize(getApplicationContext(), "AIzaSyDBgLHJYirxcbCrWqn32GMNOcl9XYVyZQc");
+        Places.initialize(getApplicationContext(), "");
         vkAccessTokenTracker.startTracking();
         VKSdk.initialize(this);
     }
